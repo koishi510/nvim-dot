@@ -20,6 +20,7 @@ return {
         "lua_ls",
         "basedpyright",
         "rust_analyzer",
+        "texlab",
         "vtsls",
         "vue_ls",
         "jsonls",
@@ -116,6 +117,7 @@ return {
         },
         jsonls = {},
         rust_analyzer = {},
+        texlab = {},
         vtsls = {
           filetypes = {
             "javascript",

@@ -22,6 +22,7 @@
 - `outline.nvim` 符号大纲
 - `nvim-treesitter-context` 顶部上下文
 - `todo-comments.nvim` TODO 高亮与搜索
+- `vimtex` + `texlab` LaTeX 支持
 - Markdown 渲染与浏览器预览
 - `lualine` 状态栏
 - `gitsigns` Git 标记
@@ -38,11 +39,16 @@
 - `ripgrep`
 - `fd`
 - `lazygit`
+- LaTeX 工具链: `latexmk`
 
 如果你要使用系统剪贴板，还需要安装：
 
 - Wayland: `wl-clipboard`
 - X11: `xclip` 或 `xsel`
+
+如果你要使用 LaTeX 预览，还需要安装一个 PDF 查看器，例如：
+
+- Linux: `zathura`
 
 ### 2. 放置配置目录
 
@@ -87,7 +93,7 @@ nvim
 ### 4. 安装语言解析器
 
 ```vim
-:TSInstall bash c cpp lua python rust go javascript typescript tsx vue html css json yaml markdown markdown_inline
+:TSInstall bash bibtex c cpp html css javascript json latex lua markdown markdown_inline python rust go typescript tsx vue yaml
 ```
 
 ### 5. 安装 LSP 和格式化工具
@@ -100,7 +106,7 @@ nvim
 
 确认这些工具已安装：
 
-- LSP: `bashls` `clangd` `gopls` `lua_ls` `basedpyright` `rust_analyzer` `vtsls` `vue_ls` `html` `cssls` `jsonls` `yamlls`
+- LSP: `bashls` `clangd` `gopls` `lua_ls` `basedpyright` `rust_analyzer` `texlab` `vtsls` `vue_ls` `html` `cssls` `jsonls` `yamlls`
 - Formatter / Linter: `shfmt` `shellcheck` `stylua` `prettierd` `eslint_d` `ruff` `clang-format` `gofumpt` `goimports`
 
 ### 6. 可选检查
@@ -164,10 +170,21 @@ nvim
 - `zR` / `zM`：打开 / 关闭所有折叠
 - `<Esc><Esc>`：退出终端模式
 
+## LaTeX
+
+- 已启用 `vimtex` 和 `texlab`
+- `LuaSnip + friendly-snippets` 会直接提供 LaTeX snippets
+- 默认使用 `latexmk` 编译，`zathura` 预览 PDF
+- 常用 `vimtex` 操作：
+  - `\ll`：编译
+  - `\lv`：查看 PDF
+  - `\lk`：上一条错误
+  - `\lj`：下一条错误
+
 ## Git Conflict
 
-- `<Space>gf` 先列出所有冲突文件
+- `<Space>gf` 列出所有冲突文件
 - `[x` / `]x` 跳冲突位置
 - `<Space>co` / `<Space>ct` / `<Space>cb` / `<Space>cn` 处理当前冲突块
 - `<Space>gm` 打开 `Diffview` merge 视图
-- `<Space>gg` 打开 `lazygit` 做 stage / commit / merge 收尾
+- `<Space>gg` 打开 `lazygit`
