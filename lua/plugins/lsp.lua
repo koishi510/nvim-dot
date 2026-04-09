@@ -27,6 +27,28 @@ return {
     },
   },
   {
+    "dnlhc/glance.nvim",
+    cmd = "Glance",
+    opts = {
+      height = 18,
+      border = {
+        enable = true,
+        top_char = " ",
+        bottom_char = " ",
+      },
+      list = {
+        position = "right",
+        width = 0.33,
+      },
+    },
+    keys = {
+      { "gpd", "<cmd>Glance definitions<cr>", desc = "Peek definitions" },
+      { "gpr", "<cmd>Glance references<cr>", desc = "Peek references" },
+      { "gpi", "<cmd>Glance implementations<cr>", desc = "Peek implementations" },
+      { "gpy", "<cmd>Glance type_definitions<cr>", desc = "Peek type definitions" },
+    },
+  },
+  {
     "neovim/nvim-lspconfig",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
@@ -50,7 +72,12 @@ return {
 
         map("n", "gd", vim.lsp.buf.definition, "Go to definition")
         map("n", "gr", vim.lsp.buf.references, "References")
+        map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
+        map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
+        map("n", "gy", vim.lsp.buf.type_definition, "Go to type definition")
         map("n", "K", vim.lsp.buf.hover, "Hover docs")
+        map("n", "<leader>sd", vim.lsp.buf.document_symbol, "Document symbols")
+        map("n", "<leader>sw", vim.lsp.buf.workspace_symbol, "Workspace symbols")
         map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
         map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
         map("n", "<leader>f", function()

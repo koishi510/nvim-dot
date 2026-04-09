@@ -1,7 +1,47 @@
 local map = vim.keymap.set
 local git = require("config.git")
 
+local function is_real_buffer(buf)
+  if not vim.api.nvim_buf_is_valid(buf) or not vim.bo[buf].buflisted then
+    return false
+  end
+
+  if vim.bo[buf].buftype ~= "" then
+    return false
+  end
+
+  local ft = vim.bo[buf].filetype
+  if ft == "snacks_dashboard" or ft:match("^snacks_") then
+    return false
+  end
+
+  return true
+end
+
+local function real_buffers()
+  local ret = {}
+
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if is_real_buffer(buf) then
+      ret[#ret + 1] = buf
+    end
+  end
+
+  return ret
+end
+
 local function delete_buffer()
+  local current = vim.api.nvim_get_current_buf()
+  local buffers = real_buffers()
+
+  if #buffers == 1 and buffers[1] == current then
+    for _, picker in ipairs(Snacks.picker.get({ source = "explorer" })) do
+      picker:close()
+    end
+    Snacks.dashboard({ win = 0, buf = vim.api.nvim_create_buf(false, true) })
+    return
+  end
+
   Snacks.bufdelete.delete()
 end
 

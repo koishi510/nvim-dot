@@ -8,7 +8,7 @@ return {
     opts = {
       options = {
         diagnostics = "nvim_lsp",
-        always_show_bufferline = true,
+        always_show_bufferline = false,
         close_command = function(buf)
           Snacks.bufdelete.delete({ buf = buf })
         end,
@@ -24,7 +24,7 @@ return {
             separator = false,
           },
         },
-        separator_style = "slant",
+        separator_style = { "", "" },
       },
     },
   },
@@ -59,6 +59,8 @@ return {
         { "<leader>n", group = "notify" },
         { "<leader>s", group = "split" },
         { "<leader>t", group = "terminal" },
+        { "<leader>u", group = "ui" },
+        { "gp", group = "peek" },
       },
     },
   },

@@ -14,12 +14,13 @@
 - `bufferline.nvim` 顶部标签栏
 - `diffview.nvim` Git diff / file history / merge 视图
 - `flash.nvim` 快速跳转
+- `glance.nvim` 预览定义 / 引用 / 实现
 - `git-conflict.nvim` 冲突选择助手
 - `img-clip.nvim` 粘贴剪贴板图片
 - `nvim-ufo` 代码折叠
 - `outline.nvim` 符号大纲
+- `nvim-treesitter-context` 顶部上下文
 - `todo-comments.nvim` TODO 高亮与搜索
-- Vim/Neovim cheatsheet 查询
 - Markdown 渲染与浏览器预览
 - `lualine` 状态栏
 - `gitsigns` Git 标记
@@ -117,10 +118,13 @@ nvim
 - `<Space>fb`：切换缓冲区
 - `<Space>fh`：帮助文档
 - `<Space>fr`：最近文件
+- `<Space>bd`：关闭当前标签；如果这是最后一个文件，则回到 dashboard
 - `<Space>bp`：固定当前标签
 - `<Space>bo`：关闭其他标签
 - `<Space>f`：格式化当前文件
 - `<Space>o`：切换符号大纲
+- `<Space>sd`：当前文件符号
+- `<Space>sw`：工作区符号
 - `<Space>ip`：粘贴剪贴板图片
 - `<Space>ft`：搜索 TODO 注释
 - `<Space>fq`：TODO quickfix 列表
@@ -140,11 +144,16 @@ nvim
 - `<Space>nd`：清空通知
 - `<Space>hc`：查看键位列表
 - `<Space>mp`：切换 Markdown 预览
+- `<Space>uc`：切换顶部代码上下文
 - `<Space>co`：冲突块选择 ours
 - `<Space>ct`：冲突块选择 theirs
 - `<Space>cb`：冲突块保留双方
 - `<Space>cn`：冲突块全删
+- `gd` / `gr` / `gi`：定义 / 引用 / 实现
+- `gD` / `gy`：声明 / 类型定义
+- `gpd` / `gpr` / `gpi` / `gpy`：预览定义 / 引用 / 实现 / 类型定义
 - `s` / `S`：Flash 快速跳转
+- `[c`：跳到当前顶部上下文
 - `[h` / `]h`：切换上一个/下一个 git hunk
 - `[t` / `]t`：切换上一个/下一个 TODO
 - `[x` / `]x`：切换上一个/下一个冲突标记
