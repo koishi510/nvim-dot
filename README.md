@@ -87,7 +87,7 @@ nvim
 ### 4. 安装语言解析器
 
 ```vim
-:TSInstall c cpp lua python rust go javascript typescript tsx vue html css json yaml markdown markdown_inline
+:TSInstall bash c cpp lua python rust go javascript typescript tsx vue html css json yaml markdown markdown_inline
 ```
 
 ### 5. 安装 LSP 和格式化工具
@@ -100,8 +100,8 @@ nvim
 
 确认这些工具已安装：
 
-- LSP: `clangd` `gopls` `lua_ls` `basedpyright` `rust_analyzer` `vtsls` `vue_ls` `html` `cssls` `jsonls` `yamlls`
-- Formatter / Linter: `stylua` `prettierd` `eslint_d` `ruff` `clang-format` `gofumpt` `goimports`
+- LSP: `bashls` `clangd` `gopls` `lua_ls` `basedpyright` `rust_analyzer` `vtsls` `vue_ls` `html` `cssls` `jsonls` `yamlls`
+- Formatter / Linter: `shfmt` `shellcheck` `stylua` `prettierd` `eslint_d` `ruff` `clang-format` `gofumpt` `goimports`
 
 ### 6. 可选检查
 

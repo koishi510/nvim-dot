@@ -12,6 +12,7 @@ return {
     },
     opts = {
       ensure_installed = {
+        "bashls",
         "clangd",
         "gopls",
         "html",
@@ -87,6 +88,7 @@ return {
       end
 
       local servers = {
+        bashls = {},
         clangd = {},
         gopls = {},
         html = {},

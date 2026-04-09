@@ -6,6 +6,8 @@ return {
     },
     opts = {
       ensure_installed = {
+        "shellcheck",
+        "shfmt",
         "stylua",
         "prettierd",
         "eslint_d",
@@ -45,6 +47,7 @@ return {
         }
       end,
       formatters_by_ft = {
+        bash = { "shfmt" },
         c = { "clang_format" },
         cpp = { "clang_format" },
         css = { "prettierd", "prettier" },
@@ -56,10 +59,12 @@ return {
         lua = { "stylua" },
         python = { "ruff_format", "black" },
         rust = { "rustfmt" },
+        sh = { "shfmt" },
         typescript = { "prettierd", "prettier" },
         typescriptreact = { "prettierd", "prettier" },
         vue = { "prettierd", "prettier" },
         yaml = { "prettierd", "prettier" },
+        zsh = { "shfmt" },
       },
     },
   },
@@ -69,6 +74,7 @@ return {
     config = function()
       local lint = require("lint")
       local lint_specs = {
+        bash = { "shellcheck" },
         c = { "clangtidy", "cppcheck" },
         cpp = { "clangtidy", "cppcheck" },
         css = { "stylelint" },
@@ -77,9 +83,11 @@ return {
         javascriptreact = { "eslint_d", "eslint" },
         python = { "ruff" },
         rust = { "clippy" },
+        sh = { "shellcheck" },
         typescript = { "eslint_d", "eslint" },
         typescriptreact = { "eslint_d", "eslint" },
         vue = { "eslint_d", "eslint" },
+        zsh = { "shellcheck" },
       }
       local warned = {}
 
