@@ -22,15 +22,9 @@ map("n", "<leader>co", "<cmd>GitConflictChooseOurs<cr>", { desc = "Conflict choo
 map("n", "<leader>ct", "<cmd>GitConflictChooseTheirs<cr>", { desc = "Conflict choose theirs" })
 map("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Open diffview" })
 map("n", "<leader>gf", git.set_conflict_qflist, { desc = "List conflicted files" })
-map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "Open lazygit" })
 map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File history" })
 map("n", "<leader>gm", "<cmd>DiffviewOpen<cr>", { desc = "Merge view" })
-map("n", "<leader>hc", "<cmd>Cheatsheet<cr>", { desc = "Open cheatsheet" })
 map("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Markdown preview" })
-map("n", "<leader>tt", "<cmd>ToggleTerm direction=float<cr>", { desc = "Float terminal" })
-map("n", "<leader>th", "<cmd>ToggleTerm direction=horizontal<cr>", { desc = "Horizontal terminal" })
-map("n", "<leader>tv", "<cmd>ToggleTerm direction=vertical size=80<cr>", { desc = "Vertical terminal" })
-map("n", "<leader>tg", "<cmd>TermExec cmd='lazygit' direction=float<cr>", { desc = "Terminal lazygit" })
 
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
@@ -48,7 +42,6 @@ map("n", "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", { desc = "Close other b
 
 map("v", "J", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
-
-map("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file tree" })
+map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("n", "]x", "<cmd>GitConflictNextConflict<cr>", { desc = "Next conflict marker" })
 map("n", "[x", "<cmd>GitConflictPrevConflict<cr>", { desc = "Previous conflict marker" })

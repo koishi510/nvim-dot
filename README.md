@@ -1,21 +1,24 @@
 # Modern Neovim Config
 
-一个基于 `lazy.nvim` 的现代化 Neovim 配置，默认提供：
+一个基于 `lazy.nvim` 的现代化 Neovim 配置。
+
+## 特性
 
 - `tokyonight` 主题
-- `neo-tree` 文件树
-- `telescope` 模糊查找
 - `treesitter` 高亮与缩进
-- 自定义 dashboard 首页
+- `snacks.nvim` dashboard / explorer / picker / terminal / lazygit / notifier / zen / scratch / statuscolumn
 - `mason` + `lspconfig` 语言服务器管理
 - `conform.nvim` 自动格式化
 - `nvim-lint` 代码检查
 - `nvim-cmp` + `LuaSnip` 自动补全
 - `bufferline.nvim` 顶部标签栏
 - `diffview.nvim` Git diff / file history / merge 视图
+- `flash.nvim` 快速跳转
 - `git-conflict.nvim` 冲突选择助手
-- `lazygit.nvim` Git 面板
-- `toggleterm.nvim` 浮动终端
+- `img-clip.nvim` 粘贴剪贴板图片
+- `nvim-ufo` 代码折叠
+- `outline.nvim` 符号大纲
+- `todo-comments.nvim` TODO 高亮与搜索
 - Vim/Neovim cheatsheet 查询
 - Markdown 渲染与浏览器预览
 - `lualine` 状态栏
@@ -24,8 +27,6 @@
 ## 安装
 
 ### 1. 前置依赖
-
-建议先安装这些基础工具：
 
 - `neovim` 0.12+
 - `git`
@@ -61,8 +62,6 @@ mv ~/.config/nvim ~/.config/nvim.bak
 git clone <your-repo-url> ~/.config/nvim
 ```
 
-或者直接复制整个目录过去。
-
 ### 3. 首次启动
 
 直接执行：
@@ -85,8 +84,6 @@ nvim
 
 ### 4. 安装语言解析器
 
-`nvim-treesitter` 使用新版接口，解析器需要按需安装，例如：
-
 ```vim
 :TSInstall c cpp lua python rust go javascript typescript tsx vue html css json yaml markdown markdown_inline
 ```
@@ -106,8 +103,6 @@ nvim
 
 ### 6. 可选检查
 
-可以用这些命令确认环境是否正常：
-
 ```vim
 :checkhealth
 :Lazy
@@ -120,41 +115,47 @@ nvim
 - `<Space>ff`：查找文件
 - `<Space>fg`：全文搜索
 - `<Space>fb`：切换缓冲区
-- `gd`：跳转定义
-- `gr`：查找引用
-- `K`：查看悬浮文档
-- `<Space>rn`：重命名
-- `<Space>ca`：代码操作
+- `<Space>fh`：帮助文档
+- `<Space>fr`：最近文件
 - `<Space>bp`：固定当前标签
 - `<Space>bo`：关闭其他标签
-- `<Space>co`：冲突块选择 ours
-- `<Space>ct`：冲突块选择 theirs
-- `<Space>cb`：冲突块保留双方
-- `<Space>cn`：冲突块全删
 - `<Space>f`：格式化当前文件
-- `<Space>gd`：打开 Diffview
-- `<Space>gf`：列出冲突文件到 quickfix
+- `<Space>o`：切换符号大纲
+- `<Space>ip`：粘贴剪贴板图片
+- `<Space>ft`：搜索 TODO 注释
+- `<Space>fq`：TODO quickfix 列表
 - `<Space>gg`：打开 lazygit
+- `<Space>gB`：在浏览器打开当前 Git 位置
+- `<Space>gd`：打开 Diffview
 - `<Space>gh`：查看当前文件历史
 - `<Space>gm`：打开 merge/diff 视图
-- `<Space>hc`：打开 Vim/Neovim cheatsheet
-- `<Space>ll`：手动执行 lint
-- `<Space>mp`：切换 Markdown 预览
 - `<Space>tt`：打开浮动终端
 - `<Space>th`：打开横向终端
 - `<Space>tv`：打开纵向终端
 - `<Space>tg`：在终端中打开 lazygit
-- `<Space>gp`：预览当前 git hunk
-- `<Space>gb`：查看当前行 blame
+- `<Space>z`：Zen 模式
+- `<Space>.`：切换 scratch
+- `<Space>S`：scratch 列表
+- `<Space>nh`：通知历史
+- `<Space>nd`：清空通知
+- `<Space>hc`：查看键位列表
+- `<Space>mp`：切换 Markdown 预览
+- `<Space>co`：冲突块选择 ours
+- `<Space>ct`：冲突块选择 theirs
+- `<Space>cb`：冲突块保留双方
+- `<Space>cn`：冲突块全删
+- `s` / `S`：Flash 快速跳转
 - `[h` / `]h`：切换上一个/下一个 git hunk
+- `[t` / `]t`：切换上一个/下一个 TODO
 - `[x` / `]x`：切换上一个/下一个冲突标记
+- `[[` / `]]`：切换上一个/下一个引用
+- `zR` / `zM`：打开 / 关闭所有折叠
 - `<Esc><Esc>`：退出终端模式
 
-## 首次启动
+## Git Conflict
 
-首次打开 `nvim` 时会自动安装 `lazy.nvim` 和插件。  
-安装完语言服务器后，可执行 `:Mason` 管理更多开发工具。
-
-`nvim-treesitter` 使用新版接口，首次可按需执行 `:TSInstall lua bash json yaml markdown` 安装解析器。
-
-格式化与 lint 默认覆盖 `c/c++`、`python`、`rust`、`go`、`vue`、`js/ts`、`css`、`html`。首次安装插件后可执行 `:Mason` 确认 `prettierd`、`eslint_d`、`ruff`、`clang-format`、`gofumpt`、`goimports` 等工具已安装。
+- `<Space>gf` 先列出所有冲突文件
+- `[x` / `]x` 跳冲突位置
+- `<Space>co` / `<Space>ct` / `<Space>cb` / `<Space>cn` 处理当前冲突块
+- `<Space>gm` 打开 `Diffview` merge 视图
+- `<Space>gg` 打开 `lazygit` 做 stage / commit / merge 收尾

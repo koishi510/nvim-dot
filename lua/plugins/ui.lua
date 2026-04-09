@@ -9,14 +9,6 @@ return {
       options = {
         diagnostics = "nvim_lsp",
         always_show_bufferline = true,
-        offsets = {
-          {
-            filetype = "neo-tree",
-            text = "Explorer",
-            highlight = "Directory",
-            text_align = "left",
-          },
-        },
         separator_style = "slant",
       },
     },
@@ -46,8 +38,10 @@ return {
         { "<leader>f", group = "find" },
         { "<leader>g", group = "git" },
         { "<leader>h", group = "help" },
+        { "<leader>i", group = "image" },
         { "<leader>l", group = "lint" },
         { "<leader>m", group = "markdown" },
+        { "<leader>n", group = "notify" },
         { "<leader>s", group = "split" },
         { "<leader>t", group = "terminal" },
       },
