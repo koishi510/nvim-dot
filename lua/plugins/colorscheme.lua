@@ -11,6 +11,26 @@ return {
           floats = "transparent",
         },
         on_highlights = function(highlights)
+          local rainbow_groups = {
+            RainbowDelimiterRed = "#f7768e",
+            RainbowDelimiterYellow = "#e0af68",
+            RainbowDelimiterBlue = "#7aa2f7",
+            RainbowDelimiterOrange = "#ff9e64",
+            RainbowDelimiterGreen = "#9ece6a",
+            RainbowDelimiterViolet = "#bb9af7",
+            RainbowDelimiterCyan = "#7dcfff",
+          }
+
+          for group, color in pairs(rainbow_groups) do
+            highlights[group] = { fg = color, bg = "NONE" }
+          end
+
+          highlights.MatchParen = {
+            fg = "#0f0f14",
+            bg = "#9ece6a",
+            bold = true,
+          }
+
           local transparent_groups = {
             "Normal",
             "NormalFloat",

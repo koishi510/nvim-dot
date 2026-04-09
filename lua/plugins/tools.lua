@@ -60,12 +60,30 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       local lint = require("lint")
+      local lint_specs = {
+        c = { "clangtidy", "cppcheck" },
+        cpp = { "clangtidy", "cppcheck" },
+        css = { "stylelint" },
+        go = { "golangcilint" },
+        javascript = { "eslint_d", "eslint" },
+        javascriptreact = { "eslint_d", "eslint" },
+        python = { "ruff" },
+        rust = { "clippy" },
+        typescript = { "eslint_d", "eslint" },
+        typescriptreact = { "eslint_d", "eslint" },
+        vue = { "eslint_d", "eslint" },
+      }
+      local warned = {}
 
       local function available(names)
         local result = {}
 
         for _, name in ipairs(names) do
-          if lint.linters[name] then
+          local linter = lint.linters[name]
+          local cmd = linter and linter.cmd
+          local executable = type(cmd) == "string" and vim.fn.executable(cmd) == 1
+
+          if linter and (cmd == nil or executable) then
             table.insert(result, name)
           end
         end
@@ -73,31 +91,40 @@ return {
         return result
       end
 
-      lint.linters_by_ft = {
-        c = available({ "clangtidy", "cppcheck" }),
-        cpp = available({ "clangtidy", "cppcheck" }),
-        css = available({ "stylelint" }),
-        go = available({ "golangcilint" }),
-        javascript = available({ "eslint_d", "eslint" }),
-        javascriptreact = available({ "eslint_d", "eslint" }),
-        python = available({ "ruff" }),
-        rust = available({ "clippy" }),
-        typescript = available({ "eslint_d", "eslint" }),
-        typescriptreact = available({ "eslint_d", "eslint" }),
-        vue = available({ "eslint_d", "eslint" }),
-      }
+      lint.linters_by_ft = vim.tbl_map(available, lint_specs)
+
+      local function try_lint(bufnr)
+        bufnr = bufnr or vim.api.nvim_get_current_buf()
+        local ft = vim.bo[bufnr].filetype
+        local names = lint_specs[ft]
+        local linters = names and available(names) or nil
+
+        if names and #names > 0 and (#linters == 0) then
+          local key = ft .. ":" .. table.concat(names, ",")
+          if not warned[key] then
+            warned[key] = true
+            vim.notify(
+              string.format("No linters available for %s. Install one of: %s", ft, table.concat(names, ", ")),
+              vim.log.levels.WARN
+            )
+          end
+          return
+        end
+
+        lint.try_lint(linters)
+      end
 
       local group = vim.api.nvim_create_augroup("nvim-lint", { clear = true })
 
       vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
         group = group,
-        callback = function()
-          lint.try_lint()
+        callback = function(args)
+          try_lint(args.buf)
         end,
       })
 
       vim.keymap.set("n", "<leader>ll", function()
-        lint.try_lint()
+        try_lint()
       end, { desc = "Run lint" })
     end,
   },

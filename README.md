@@ -122,6 +122,8 @@ nvim
 - `<Space>bp`：固定当前标签
 - `<Space>bo`：关闭其他标签
 - `<Space>f`：格式化当前文件
+- `<Space>jj`：Flash 快速跳转
+- `<Space>jt`：Flash treesitter 跳转
 - `<Space>o`：切换符号大纲
 - `<Space>sd`：当前文件符号
 - `<Space>sw`：工作区符号
@@ -149,10 +151,9 @@ nvim
 - `<Space>ct`：冲突块选择 theirs
 - `<Space>cb`：冲突块保留双方
 - `<Space>cn`：冲突块全删
-- `gd` / `gr` / `gi`：定义 / 引用 / 实现
+- `gd` / `gr` / `gs`：定义 / 引用 / 实现
 - `gD` / `gy`：声明 / 类型定义
-- `gpd` / `gpr` / `gpi` / `gpy`：预览定义 / 引用 / 实现 / 类型定义
-- `s` / `S`：Flash 快速跳转
+- `gpd` / `gpr` / `gps` / `gpy`：预览定义 / 引用 / 实现 / 类型定义
 - `[c`：跳到当前顶部上下文
 - `[h` / `]h`：切换上一个/下一个 git hunk
 - `[t` / `]t`：切换上一个/下一个 TODO

@@ -9,12 +9,16 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-nvim-lsp",
       "rafamadriz/friendly-snippets",
+      "windwp/nvim-autopairs",
     },
     config = function()
       local cmp = require("cmp")
       local luasnip = require("luasnip")
+      local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 
       require("luasnip.loaders.from_vscode").lazy_load()
+
+      cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
       cmp.setup({
         snippet = {
