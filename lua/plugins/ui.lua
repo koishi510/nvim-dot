@@ -9,6 +9,21 @@ return {
       options = {
         diagnostics = "nvim_lsp",
         always_show_bufferline = true,
+        close_command = function(buf)
+          Snacks.bufdelete.delete({ buf = buf })
+        end,
+        right_mouse_command = function(buf)
+          Snacks.bufdelete.delete({ buf = buf })
+        end,
+        offsets = {
+          {
+            filetype = "snacks_layout_box",
+            text = "Explorer",
+            highlight = "Directory",
+            text_align = "left",
+            separator = false,
+          },
+        },
         separator_style = "slant",
       },
     },

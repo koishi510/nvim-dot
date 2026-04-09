@@ -3,6 +3,10 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
+    config = function(_, opts)
+      _G.Snacks = require("snacks")
+      _G.Snacks.setup(opts)
+    end,
     opts = {
       bigfile = { enabled = true },
       dashboard = {
@@ -46,19 +50,88 @@ return {
           { section = "startup" },
         },
       },
-      explorer = { enabled = true },
+      explorer = {
+        enabled = true,
+        replace_netrw = true,
+        layout = {
+          layout = {
+            position = "left",
+            width = 30,
+          },
+        },
+        win = {
+          border = "none",
+        },
+      },
       gitbrowse = { enabled = true },
       indent = { enabled = true },
       input = { enabled = true },
-      lazygit = { enabled = true },
-      notifier = { enabled = true, timeout = 3000 },
-      picker = { enabled = true },
+      lazygit = {
+        enabled = true,
+        configure = true,
+        win = {
+          style = "lazygit",
+        },
+      },
+      notifier = {
+        enabled = true,
+        timeout = 3000,
+        width = { min = 28, max = 90 },
+        height = { min = 1, max = 0.6 },
+      },
+      picker = {
+        enabled = true,
+        layout = {
+          preset = "telescope",
+          cycle = false,
+        },
+        win = {
+          input = {
+            border = "rounded",
+            keys = {
+              ["<Esc>"] = { "close", mode = { "n", "i" } },
+            },
+          },
+          list = {
+            border = "rounded",
+          },
+          preview = {
+            border = "rounded",
+          },
+        },
+      },
       quickfile = { enabled = true },
       scope = { enabled = true },
       scratch = { enabled = true },
       scroll = { enabled = true },
       statuscolumn = { enabled = true },
-      terminal = { enabled = true },
+      styles = {
+        notification = {
+          border = "rounded",
+          wo = { wrap = true },
+        },
+        input = {
+          relative = "editor",
+          row = 0.35,
+          col = 0.5,
+          width = 60,
+          border = "rounded",
+        },
+        lazygit = {
+          border = "rounded",
+          width = 0.92,
+          height = 0.9,
+        },
+        terminal = {
+          border = "rounded",
+        },
+      },
+      terminal = {
+        enabled = true,
+        win = {
+          style = "terminal",
+        },
+      },
       words = { enabled = true },
       zen = { enabled = true },
     },

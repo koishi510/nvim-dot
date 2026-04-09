@@ -1,6 +1,14 @@
 local map = vim.keymap.set
 local git = require("config.git")
 
+local function delete_buffer()
+  Snacks.bufdelete.delete()
+end
+
+local function delete_other_buffers()
+  Snacks.bufdelete.other()
+end
+
 local function format_buffer()
   local ok, conform = pcall(require, "conform")
 
@@ -36,9 +44,9 @@ map("n", "<leader>sh", "<cmd>split<cr>", { desc = "Split horizontally" })
 
 map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
 map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
-map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
+map("n", "<leader>bd", delete_buffer, { desc = "Delete buffer" })
 map("n", "<leader>bp", "<cmd>BufferLineTogglePin<cr>", { desc = "Pin buffer" })
-map("n", "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", { desc = "Close other buffers" })
+map("n", "<leader>bo", delete_other_buffers, { desc = "Close other buffers" })
 
 map("v", "J", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
