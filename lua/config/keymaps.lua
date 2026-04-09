@@ -1,46 +1,7 @@
 local map = vim.keymap.set
 local git = require("config.git")
-local quit = require("config.quit")
-local smart_quit = quit.smart_quit
-
-local function is_real_buffer(buf)
-  if not vim.api.nvim_buf_is_valid(buf) or not vim.bo[buf].buflisted then
-    return false
-  end
-
-  if vim.bo[buf].buftype ~= "" then
-    return false
-  end
-
-  local ft = vim.bo[buf].filetype
-  if ft == "snacks_dashboard" or ft:match("^snacks_") then
-    return false
-  end
-
-  return true
-end
-
-local function real_buffers()
-  local ret = {}
-
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if is_real_buffer(buf) then
-      ret[#ret + 1] = buf
-    end
-  end
-
-  return ret
-end
 
 local function delete_buffer()
-  local current = vim.api.nvim_get_current_buf()
-  local buffers = real_buffers()
-
-  if #buffers == 1 and buffers[1] == current then
-    smart_quit()
-    return
-  end
-
   Snacks.bufdelete.delete()
 end
 
@@ -96,51 +57,3 @@ map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("n", "]x", "<cmd>GitConflictNextConflict<cr>", { desc = "Next conflict marker" })
 map("n", "[x", "<cmd>GitConflictPrevConflict<cr>", { desc = "Previous conflict marker" })
-
-vim.api.nvim_create_user_command("SmartQuit", smart_quit, {
-  desc = "Quit current file without leaving explorer fullscreen",
-})
-
-vim.api.nvim_create_user_command("SmartQuitForce", function()
-  smart_quit({ force = true })
-end, {
-  desc = "Force quit current file without leaving special windows fullscreen",
-})
-
-vim.api.nvim_create_user_command("SmartQuitSet", function(opts)
-  local arg = opts.args:lower()
-  if arg == "on" or arg == "true" or arg == "enable" then
-    quit.persist_enabled(true)
-    return
-  end
-
-  if arg == "off" or arg == "false" or arg == "disable" then
-    quit.persist_enabled(false)
-    return
-  end
-
-  vim.notify("Use :SmartQuitSet on|off", vim.log.levels.ERROR)
-end, {
-  nargs = 1,
-  complete = function()
-    return { "on", "off" }
-  end,
-  desc = "Persistently enable or disable SmartQuit",
-})
-
-map("c", "<CR>", function()
-  if vim.fn.getcmdtype() ~= ":" then
-    return "<CR>"
-  end
-
-  local line = vim.fn.getcmdline()
-  if (line == "q!" or line == "quit!") and not quit.should_use_native_quit() then
-    return "<C-u>SmartQuitForce<CR>"
-  end
-
-  if (line == "q" or line == "quit") and not quit.should_use_native_quit() then
-    return "<C-u>SmartQuit<CR>"
-  end
-
-  return "<CR>"
-end, { expr = true, desc = "Run SmartQuit for :q" })

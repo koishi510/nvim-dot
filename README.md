@@ -163,9 +163,6 @@ nvim
 - `[[` / `]]`：切换上一个/下一个引用
 - `zR` / `zM`：打开 / 关闭所有折叠
 - `<Esc><Esc>`：退出终端模式
-- `:q` / `:quit`：启用 `SmartQuit` 时按智能关闭处理
-- `:q!` / `:quit!`：启用 `SmartQuit` 时按智能强制关闭处理
-- `:SmartQuitSet on|off`：持久启用或关闭 `SmartQuit`
 
 ## Git Conflict
 
