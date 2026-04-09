@@ -25,6 +25,14 @@ return {
     cmd = { "ConformInfo" },
     opts = {
       notify_on_error = false,
+      formatters = {
+        clang_format = {
+          inherit = true,
+          prepend_args = {
+            "-style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}",
+          },
+        },
+      },
       format_on_save = function(bufnr)
         local disable_filetypes = {
           c = true,
@@ -98,6 +106,12 @@ return {
         local ft = vim.bo[bufnr].filetype
         local names = lint_specs[ft]
         local linters = names and available(names) or nil
+        local line_count = vim.api.nvim_buf_line_count(bufnr)
+        local first_line = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] or ""
+
+        if names and line_count <= 1 and first_line == "" then
+          return
+        end
 
         if names and #names > 0 and (#linters == 0) then
           local key = ft .. ":" .. table.concat(names, ",")

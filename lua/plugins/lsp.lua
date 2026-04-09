@@ -42,10 +42,10 @@ return {
       },
     },
     keys = {
-      { "gpd", "<cmd>Glance definitions<cr>", desc = "Peek definitions" },
-      { "gpr", "<cmd>Glance references<cr>", desc = "Peek references" },
-      { "gps", "<cmd>Glance implementations<cr>", desc = "Peek implementations" },
-      { "gpy", "<cmd>Glance type_definitions<cr>", desc = "Peek type definitions" },
+      { "gd", "<cmd>Glance definitions<cr>", desc = "Definitions" },
+      { "gr", "<cmd>Glance references<cr>", desc = "References" },
+      { "gs", "<cmd>Glance implementations<cr>", desc = "Implementations" },
+      { "gy", "<cmd>Glance type_definitions<cr>", desc = "Type definitions" },
     },
   },
   {
@@ -70,11 +70,6 @@ return {
           vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
         end
 
-        map("n", "gd", vim.lsp.buf.definition, "Go to definition")
-        map("n", "gr", vim.lsp.buf.references, "References")
-        map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
-        map("n", "gy", vim.lsp.buf.type_definition, "Go to type definition")
-        map("n", "gs", vim.lsp.buf.implementation, "Go to implementation")
         map("n", "K", vim.lsp.buf.hover, "Hover docs")
         map("n", "<leader>sd", vim.lsp.buf.document_symbol, "Document symbols")
         map("n", "<leader>sw", vim.lsp.buf.workspace_symbol, "Workspace symbols")

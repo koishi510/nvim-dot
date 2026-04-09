@@ -21,16 +21,16 @@ return {
         desc = "Flash treesitter",
       },
       {
-        "<leader>jo",
-        mode = "o",
+        "<leader>jr",
+        mode = { "n", "o", "x" },
         function()
           require("flash").remote()
         end,
         desc = "Remote flash",
       },
       {
-        "<leader>jq",
-        mode = { "o", "x" },
+        "<leader>js",
+        mode = { "n", "o", "x" },
         function()
           require("flash").treesitter_search()
         end,

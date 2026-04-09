@@ -60,7 +60,7 @@ return {
         { "<leader>s", group = "split" },
         { "<leader>t", group = "terminal" },
         { "<leader>u", group = "ui" },
-        { "gp", group = "peek" },
+        { "g", group = "goto" },
       },
     },
   },

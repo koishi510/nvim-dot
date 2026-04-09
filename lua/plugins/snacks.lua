@@ -6,6 +6,14 @@ return {
     config = function(_, opts)
       _G.Snacks = require("snacks")
       _G.Snacks.setup(opts)
+
+      local icon = _G.Snacks.util.icon
+      _G.Snacks.util.icon = function(name, cat, icon_opts)
+        if cat == "file" and type(name) == "string" then
+          name = vim.fs.basename(name)
+        end
+        return icon(name, cat, icon_opts)
+      end
     end,
     opts = {
       bigfile = { enabled = true },
@@ -203,21 +211,21 @@ return {
       {
         "<leader>tt",
         function()
-          Snacks.terminal()
+          Snacks.terminal(nil, { count = 1 })
         end,
         desc = "Float terminal",
       },
       {
         "<leader>th",
         function()
-          Snacks.terminal(nil, { win = { position = "bottom", height = 0.3 } })
+          Snacks.terminal(nil, { count = 2, win = { position = "bottom", height = 0.22 } })
         end,
         desc = "Horizontal terminal",
       },
       {
         "<leader>tv",
         function()
-          Snacks.terminal(nil, { win = { position = "right", width = 0.4 } })
+          Snacks.terminal(nil, { count = 3, win = { position = "right", width = 0.3 } })
         end,
         desc = "Vertical terminal",
       },

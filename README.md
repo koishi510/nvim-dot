@@ -14,9 +14,10 @@
 - `bufferline.nvim` 顶部标签栏
 - `diffview.nvim` Git diff / file history / merge 视图
 - `flash.nvim` 快速跳转
-- `glance.nvim` 预览定义 / 引用 / 实现
+- `glance.nvim` 定义 / 引用 / 实现 / 类型定义面板
 - `git-conflict.nvim` 冲突选择助手
 - `img-clip.nvim` 粘贴剪贴板图片
+- `im-select.nvim` 自动切换输入法
 - `nvim-ufo` 代码折叠
 - `outline.nvim` 符号大纲
 - `nvim-treesitter-context` 顶部上下文
@@ -118,12 +119,14 @@ nvim
 - `<Space>fb`：切换缓冲区
 - `<Space>fh`：帮助文档
 - `<Space>fr`：最近文件
-- `<Space>bd`：关闭当前标签；如果这是最后一个文件，则回到 dashboard
+- `<Space>bd`：关闭当前标签；如果这是最后一个文件，则按关闭处理
 - `<Space>bp`：固定当前标签
 - `<Space>bo`：关闭其他标签
 - `<Space>f`：格式化当前文件
 - `<Space>jj`：Flash 快速跳转
 - `<Space>jt`：Flash treesitter 跳转
+- `<Space>jr`：Flash 远程操作
+- `<Space>js`：Flash treesitter 搜索
 - `<Space>o`：切换符号大纲
 - `<Space>sd`：当前文件符号
 - `<Space>sw`：工作区符号
@@ -139,6 +142,7 @@ nvim
 - `<Space>th`：打开横向终端
 - `<Space>tv`：打开纵向终端
 - `<Space>tg`：在终端中打开 lazygit
+- `<C-Up>` / `<C-Down>` / `<C-Left>` / `<C-Right>`：调整当前分屏大小
 - `<Space>z`：Zen 模式
 - `<Space>.`：切换 scratch
 - `<Space>S`：scratch 列表
@@ -151,9 +155,7 @@ nvim
 - `<Space>ct`：冲突块选择 theirs
 - `<Space>cb`：冲突块保留双方
 - `<Space>cn`：冲突块全删
-- `gd` / `gr` / `gs`：定义 / 引用 / 实现
-- `gD` / `gy`：声明 / 类型定义
-- `gpd` / `gpr` / `gps` / `gpy`：预览定义 / 引用 / 实现 / 类型定义
+- `gd` / `gr` / `gs` / `gy`：定义 / 引用 / 实现 / 类型定义面板
 - `[c`：跳到当前顶部上下文
 - `[h` / `]h`：切换上一个/下一个 git hunk
 - `[t` / `]t`：切换上一个/下一个 TODO
@@ -161,6 +163,9 @@ nvim
 - `[[` / `]]`：切换上一个/下一个引用
 - `zR` / `zM`：打开 / 关闭所有折叠
 - `<Esc><Esc>`：退出终端模式
+- `:q` / `:quit`：启用 `SmartQuit` 时按智能关闭处理
+- `:q!` / `:quit!`：启用 `SmartQuit` 时按智能强制关闭处理
+- `:SmartQuitSet on|off`：持久启用或关闭 `SmartQuit`
 
 ## Git Conflict
 

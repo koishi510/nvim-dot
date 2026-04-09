@@ -1,5 +1,7 @@
 local map = vim.keymap.set
 local git = require("config.git")
+local quit = require("config.quit")
+local smart_quit = quit.smart_quit
 
 local function is_real_buffer(buf)
   if not vim.api.nvim_buf_is_valid(buf) or not vim.bo[buf].buflisted then
@@ -35,10 +37,7 @@ local function delete_buffer()
   local buffers = real_buffers()
 
   if #buffers == 1 and buffers[1] == current then
-    for _, picker in ipairs(Snacks.picker.get({ source = "explorer" })) do
-      picker:close()
-    end
-    Snacks.dashboard({ win = 0, buf = vim.api.nvim_create_buf(false, true) })
+    smart_quit()
     return
   end
 
@@ -78,6 +77,10 @@ map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
 map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
 map("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
+map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
+map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
+map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
 
 map("n", "<leader>sv", "<cmd>vsplit<cr>", { desc = "Split vertically" })
 map("n", "<leader>sh", "<cmd>split<cr>", { desc = "Split horizontally" })
@@ -93,3 +96,51 @@ map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("n", "]x", "<cmd>GitConflictNextConflict<cr>", { desc = "Next conflict marker" })
 map("n", "[x", "<cmd>GitConflictPrevConflict<cr>", { desc = "Previous conflict marker" })
+
+vim.api.nvim_create_user_command("SmartQuit", smart_quit, {
+  desc = "Quit current file without leaving explorer fullscreen",
+})
+
+vim.api.nvim_create_user_command("SmartQuitForce", function()
+  smart_quit({ force = true })
+end, {
+  desc = "Force quit current file without leaving special windows fullscreen",
+})
+
+vim.api.nvim_create_user_command("SmartQuitSet", function(opts)
+  local arg = opts.args:lower()
+  if arg == "on" or arg == "true" or arg == "enable" then
+    quit.persist_enabled(true)
+    return
+  end
+
+  if arg == "off" or arg == "false" or arg == "disable" then
+    quit.persist_enabled(false)
+    return
+  end
+
+  vim.notify("Use :SmartQuitSet on|off", vim.log.levels.ERROR)
+end, {
+  nargs = 1,
+  complete = function()
+    return { "on", "off" }
+  end,
+  desc = "Persistently enable or disable SmartQuit",
+})
+
+map("c", "<CR>", function()
+  if vim.fn.getcmdtype() ~= ":" then
+    return "<CR>"
+  end
+
+  local line = vim.fn.getcmdline()
+  if (line == "q!" or line == "quit!") and not quit.should_use_native_quit() then
+    return "<C-u>SmartQuitForce<CR>"
+  end
+
+  if (line == "q" or line == "quit") and not quit.should_use_native_quit() then
+    return "<C-u>SmartQuit<CR>"
+  end
+
+  return "<CR>"
+end, { expr = true, desc = "Run SmartQuit for :q" })

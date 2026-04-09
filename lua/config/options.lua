@@ -2,6 +2,7 @@ local opt = vim.opt
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
+vim.g.smart_quit_enabled = true
 
 opt.number = true
 opt.relativenumber = true
