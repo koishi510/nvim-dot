@@ -17,6 +17,17 @@ local function apply_dashboard_window(win, buf)
   vim.wo[win].signcolumn = "no"
 end
 
+local function apply_tutor_window(win, buf)
+  if not vim.api.nvim_win_is_valid(win) or not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
+
+  vim.b[buf].snacks_indent = false
+  vim.wo[win].foldcolumn = "0"
+  vim.wo[win].signcolumn = "yes:1"
+  vim.wo[win].statuscolumn = "%s%=%l "
+end
+
 autocmd("TextYankPost", {
   desc = "Highlight when yanking text",
   callback = function()
@@ -56,5 +67,18 @@ autocmd({ "BufWinEnter", "WinEnter" }, {
     end
 
     apply_dashboard_window(vim.api.nvim_get_current_win(), buf)
+  end,
+})
+
+autocmd({ "FileType", "BufWinEnter", "WinEnter" }, {
+  pattern = "tutor",
+  desc = "Use native sign column for Tutor marks",
+  callback = function(args)
+    local buf = args.buf or vim.api.nvim_get_current_buf()
+    if vim.bo[buf].filetype ~= "tutor" then
+      return
+    end
+
+    apply_tutor_window(vim.api.nvim_get_current_win(), buf)
   end,
 })
