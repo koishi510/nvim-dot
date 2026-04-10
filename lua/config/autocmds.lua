@@ -6,12 +6,12 @@ local function apply_dashboard_window(win, buf)
   end
 
   vim.b[buf].snacks_indent = false
-  vim.bo[buf].foldmethod = "manual"
-  vim.bo[buf].foldexpr = "0"
-  vim.bo[buf].foldtext = ""
-  vim.bo[buf].foldenable = false
   vim.wo[win].number = false
   vim.wo[win].relativenumber = false
+  vim.wo[win].foldmethod = "manual"
+  vim.wo[win].foldexpr = "0"
+  vim.wo[win].foldtext = ""
+  vim.wo[win].foldenable = false
   vim.wo[win].foldcolumn = "0"
   vim.wo[win].statuscolumn = " "
   vim.wo[win].signcolumn = "no"
