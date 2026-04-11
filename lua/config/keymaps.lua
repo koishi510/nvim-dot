@@ -43,9 +43,6 @@ map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
 map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
 map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
 
-map("n", "<leader>sv", "<cmd>vsplit<cr>", { desc = "Split vertically" })
-map("n", "<leader>sh", "<cmd>split<cr>", { desc = "Split horizontally" })
-
 map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
 map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
 map("n", "<leader>bd", delete_buffer, { desc = "Delete buffer" })

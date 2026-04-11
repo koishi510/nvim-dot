@@ -57,7 +57,6 @@ return {
         { "<leader>l", group = "lint" },
         { "<leader>m", group = "markdown" },
         { "<leader>n", group = "notify" },
-        { "<leader>s", group = "split" },
         { "<leader>t", group = "terminal" },
         { "<leader>u", group = "ui" },
         { "<leader>w", group = "wiki" },
