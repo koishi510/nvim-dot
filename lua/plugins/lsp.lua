@@ -72,7 +72,7 @@ return {
           vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
         end
 
-        map("n", "K", vim.lsp.buf.hover, "Hover docs")
+        map("n", "gK", vim.lsp.buf.hover, "Hover docs")
         map("n", "<leader>sd", vim.lsp.buf.document_symbol, "Document symbols")
         map("n", "<leader>sw", vim.lsp.buf.workspace_symbol, "Workspace symbols")
         map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")

@@ -105,7 +105,7 @@ return {
       { "zr", function() require("ufo").openFoldsExceptKinds() end, desc = "Open folds" },
       { "zm", function() require("ufo").closeFoldsWith() end, desc = "Close folds" },
       {
-        "K",
+        "gK",
         function()
           local winid = require("ufo").peekFoldedLinesUnderCursor()
           if not winid then
