@@ -8,6 +8,7 @@
 - `treesitter` 高亮与缩进
 - `snacks.nvim` dashboard / explorer / picker / terminal / lazygit / notifier / zen / scratch / statuscolumn
 - `mason` + `lspconfig` 语言服务器管理
+- 自动识别项目根目录，避免从非项目根启动时 LSP / formatter 找错工作目录
 - `conform.nvim` 自动格式化
 - `nvim-lint` 代码检查
 - `nvim-cmp` + `LuaSnip` 自动补全
@@ -107,7 +108,7 @@ nvim
 ### 4. 安装语言解析器
 
 ```vim
-:TSInstall bash bibtex c cpp html css javascript json latex lua markdown markdown_inline python rust go typescript tsx vue yaml
+:TSInstall bash bibtex c cpp css elm go html javascript json latex lua matlab markdown markdown_inline python query regex rust systemverilog tsx typescript vue vim vimdoc yaml
 ```
 
 ### 5. 安装 LSP 和格式化工具
@@ -120,8 +121,8 @@ nvim
 
 确认这些工具已安装：
 
-- LSP: `bashls` `clangd` `gopls` `lua_ls` `basedpyright` `rust_analyzer` `texlab` `vtsls` `vue_ls` `html` `cssls` `jsonls` `yamlls`
-- Formatter / Linter: `shfmt` `shellcheck` `stylua` `prettierd` `eslint_d` `ruff` `clang-format` `gofumpt` `goimports`
+- LSP: `bashls` `clangd` `elmls` `gopls` `html` `cssls` `lua_ls` `matlab_ls` `basedpyright` `rust_analyzer` `texlab` `verible` `vtsls` `vue_ls` `jsonls` `yamlls`
+- Formatter / Linter: `bibtex-tidy` `shfmt` `shellcheck` `stylua` `prettierd` `eslint_d` `elm-format` `miss_hit` `stylelint` `tex-fmt` `verible` `ruff` `clang-format` `gofumpt` `goimports`
 
 ### 6. 可选检查
 

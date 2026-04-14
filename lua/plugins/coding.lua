@@ -19,10 +19,20 @@ return {
       local luasnip = require("luasnip")
       local cmp_autopairs = require("nvim-autopairs.completion.cmp")
       local lspkind = require("lspkind")
+      local has_selected_completion = false
 
       require("luasnip.loaders.from_vscode").lazy_load()
 
       cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+      cmp.event:on("confirm_done", function()
+        has_selected_completion = false
+      end)
+      cmp.event:on("menu_opened", function()
+        has_selected_completion = false
+      end)
+      cmp.event:on("menu_closed", function()
+        has_selected_completion = false
+      end)
 
       local dictionaries = vim.tbl_filter(function(path)
         return vim.fn.filereadable(path) == 1
@@ -46,8 +56,9 @@ return {
           end,
         },
         completion = {
-          completeopt = "menu,menuone,noinsert",
+          completeopt = "menu,menuone,noinsert,noselect",
         },
+        preselect = cmp.PreselectMode.None,
         formatting = {
           format = lspkind.cmp_format({
             mode = "symbol_text",
@@ -63,13 +74,35 @@ return {
           }),
         },
         mapping = cmp.mapping.preset.insert({
-          ["<C-n>"] = cmp.mapping.select_next_item(),
-          ["<C-p>"] = cmp.mapping.select_prev_item(),
+          ["<C-n>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              has_selected_completion = true
+              cmp.select_next_item()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          ["<C-p>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              has_selected_completion = true
+              cmp.select_prev_item()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<CR>"] = cmp.mapping.confirm({ select = false }),
+          ["<CR>"] = cmp.mapping(function(fallback)
+            if cmp.visible() and has_selected_completion and cmp.get_selected_entry() then
+              cmp.confirm({ select = false })
+            else
+              cmp.close()
+              fallback()
+            end
+          end, { "i", "s" }),
           ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
+              has_selected_completion = true
               cmp.select_next_item()
             elseif luasnip.expand_or_jumpable() then
               luasnip.expand_or_jump()
@@ -79,6 +112,7 @@ return {
           end, { "i", "s" }),
           ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
+              has_selected_completion = true
               cmp.select_prev_item()
             elseif luasnip.jumpable(-1) then
               luasnip.jump(-1)

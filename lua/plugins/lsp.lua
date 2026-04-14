@@ -23,6 +23,7 @@ return {
         "basedpyright",
         "rust_analyzer",
         "texlab",
+        "verible",
         "vtsls",
         "vue_ls",
         "jsonls",
@@ -160,6 +161,9 @@ return {
         },
         texlab = {
           root_dir = root_pattern(".latexmkrc", "latexmkrc", ".git"),
+        },
+        verible = {
+          root_dir = root_pattern(".svlangserver", ".svlint.toml", "verible.filelist", "filelist.f", "files.f", ".git"),
         },
         vtsls = {
           root_dir = root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),

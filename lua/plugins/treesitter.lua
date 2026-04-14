@@ -17,6 +17,7 @@ local languages = {
   "query",
   "regex",
   "rust",
+  "systemverilog",
   "bibtex",
   "tsx",
   "typescript",
@@ -38,6 +39,7 @@ return {
       end
 
       treesitter.setup({})
+      vim.treesitter.language.register("systemverilog", { "verilog", "systemverilog" })
 
       vim.api.nvim_create_autocmd("FileType", {
         pattern = languages,
