@@ -14,10 +14,12 @@ return {
       ensure_installed = {
         "bashls",
         "clangd",
+        "elmls",
         "gopls",
         "html",
         "cssls",
         "lua_ls",
+        "matlab_ls",
         "basedpyright",
         "rust_analyzer",
         "texlab",
@@ -58,6 +60,7 @@ return {
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
       local lspconfig = require("lspconfig")
+      local util = require("lspconfig.util")
       local vue_language_server_path = vim.fn.stdpath("data")
         .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
       local vue_plugin = {
@@ -88,13 +91,35 @@ return {
         end, "Format buffer")
       end
 
+      local function root_pattern(...)
+        local matcher = util.root_pattern(...)
+
+        return function(fname)
+          return matcher(fname) or util.find_git_ancestor(fname) or util.path.dirname(fname)
+        end
+      end
+
       local servers = {
-        bashls = {},
-        clangd = {},
-        gopls = {},
-        html = {},
-        cssls = {},
+        bashls = {
+          root_dir = root_pattern(".git", "Makefile"),
+        },
+        clangd = {
+          root_dir = root_pattern("compile_commands.json", "compile_flags.txt", ".clangd", "CMakeLists.txt", ".git"),
+        },
+        gopls = {
+          root_dir = root_pattern("go.work", "go.mod", ".git"),
+        },
+        html = {
+          root_dir = root_pattern("package.json", ".git"),
+        },
+        cssls = {
+          root_dir = root_pattern("package.json", ".git"),
+        },
+        elmls = {
+          root_dir = root_pattern("elm.json", ".git"),
+        },
         lua_ls = {
+          root_dir = root_pattern(".luarc.json", ".luarc.jsonc", ".stylua.toml", "stylua.toml", "lua", ".git"),
           settings = {
             Lua = {
               diagnostics = {
@@ -106,7 +131,19 @@ return {
             },
           },
         },
+        matlab_ls = {
+          root_dir = root_pattern("matlab.prj", "startup.m", "Contents.m", ".git"),
+        },
         basedpyright = {
+          root_dir = root_pattern(
+            "pyproject.toml",
+            "setup.py",
+            "setup.cfg",
+            "requirements.txt",
+            "Pipfile",
+            "pyrightconfig.json",
+            ".git"
+          ),
           settings = {
             basedpyright = {
               analysis = {
@@ -115,10 +152,17 @@ return {
             },
           },
         },
-        jsonls = {},
-        rust_analyzer = {},
-        texlab = {},
+        jsonls = {
+          root_dir = root_pattern("package.json", ".git"),
+        },
+        rust_analyzer = {
+          root_dir = root_pattern("Cargo.toml", "rust-project.json", ".git"),
+        },
+        texlab = {
+          root_dir = root_pattern(".latexmkrc", "latexmkrc", ".git"),
+        },
         vtsls = {
+          root_dir = root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
           filetypes = {
             "javascript",
             "javascriptreact",
@@ -136,8 +180,12 @@ return {
             },
           },
         },
-        vue_ls = {},
-        yamlls = {},
+        vue_ls = {
+          root_dir = root_pattern("package.json", "vue.config.js", "vite.config.ts", "vite.config.js", ".git"),
+        },
+        yamlls = {
+          root_dir = root_pattern(".yamllint", ".yamllint.yaml", ".yamllint.yml", ".git"),
+        },
       }
 
       require("mason-lspconfig").setup({

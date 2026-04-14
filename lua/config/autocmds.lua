@@ -1,5 +1,37 @@
 local autocmd = vim.api.nvim_create_autocmd
 
+local root_markers = {
+  ".git",
+  "package.json",
+  "tsconfig.json",
+  "jsconfig.json",
+  "pyproject.toml",
+  "setup.py",
+  "setup.cfg",
+  "requirements.txt",
+  "go.mod",
+  "Cargo.toml",
+  "compile_commands.json",
+  "CMakeLists.txt",
+  "elm.json",
+  "Makefile",
+  "lua",
+  "matlab.prj",
+  "startup.m",
+  "Contents.m",
+}
+
+local function project_root(path)
+  local marker = vim.fs.find(root_markers, {
+    path = path,
+    upward = true,
+  })[1]
+
+  if marker then
+    return vim.fs.dirname(marker)
+  end
+end
+
 local function apply_dashboard_window(win, buf)
   if not vim.api.nvim_win_is_valid(win) or not vim.api.nvim_buf_is_valid(buf) then
     return
@@ -39,6 +71,25 @@ autocmd("VimResized", {
   desc = "Keep splits balanced after resizing",
   callback = function()
     vim.cmd("tabdo wincmd =")
+  end,
+})
+
+autocmd({ "BufEnter", "BufWinEnter" }, {
+  desc = "Use project root as cwd for project files",
+  callback = function(args)
+    if vim.bo[args.buf].buftype ~= "" then
+      return
+    end
+
+    local path = vim.api.nvim_buf_get_name(args.buf)
+    if path == "" then
+      return
+    end
+
+    local root = project_root(vim.fs.dirname(path))
+    if root and root ~= vim.fn.getcwd() then
+      vim.cmd.tcd(vim.fn.fnameescape(root))
+    end
   end,
 })
 
