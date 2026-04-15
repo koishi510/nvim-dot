@@ -8,7 +8,7 @@ return {
         default_command = "fcitx5-remote",
         set_default_events = { "InsertLeave", "CmdlineLeave" },
         set_previous_events = { "InsertEnter" },
-        keep_quiet_on_no_binary = false,
+        keep_quiet_on_no_binary = true,
         async_switch_im = true,
       })
     end,

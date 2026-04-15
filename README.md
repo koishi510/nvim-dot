@@ -30,6 +30,8 @@
 - `vimtex` + `texlab` LaTeX 支持
 - `vim-visual-multi` 多光标编辑
 - `vimwiki` + `taskwiki` 知识管理与任务流
+- `overseer.nvim` 项目任务运行器
+- HTML 浏览器实时预览
 - Markdown 渲染与浏览器预览
 - `lualine` 状态栏
 - `gitsigns` Git 标记
@@ -108,7 +110,7 @@ nvim
 ### 4. 安装语言解析器
 
 ```vim
-:TSInstall bash bibtex c cpp css elm go html javascript json latex lua matlab markdown markdown_inline python query regex rust systemverilog tsx typescript vue vim vimdoc yaml
+:TSInstall bash bibtex c cmake cpp css dockerfile elm go html javascript json latex lua make matlab markdown markdown_inline powershell python query regex rust systemverilog tsx typescript vue vim vimdoc yaml
 ```
 
 ### 5. 安装 LSP 和格式化工具
@@ -121,8 +123,10 @@ nvim
 
 确认这些工具已安装：
 
-- LSP: `bashls` `clangd` `elmls` `gopls` `html` `cssls` `lua_ls` `matlab_ls` `basedpyright` `rust_analyzer` `texlab` `verible` `vtsls` `vue_ls` `jsonls` `yamlls`
-- Formatter / Linter: `bibtex-tidy` `shfmt` `shellcheck` `stylua` `prettierd` `eslint_d` `elm-format` `miss_hit` `stylelint` `tex-fmt` `verible` `ruff` `clang-format` `gofumpt` `goimports`
+- LSP: `bashls` `clangd` `docker_compose_language_service` `dockerls` `elmls` `gopls` `html` `cssls` `lua_ls` `matlab_ls` `neocmake` `basedpyright` `rust_analyzer` `texlab` `verible` `vtsls` `vue_ls` `jsonls` `yamlls`
+- Formatter / Linter: `bibtex-tidy` `checkmake` `cpplint` `shfmt` `shellcheck` `stylua` `prettierd` `cmakelang` `gersemi` `hadolint` `eslint_d` `elm-format` `miss_hit` `stylelint` `tex-fmt` `verible` `ruff` `clang-format` `gofumpt` `goimports` `golangci-lint`
+
+Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 
 ### 6. 可选检查
 
@@ -170,7 +174,14 @@ nvim
 - `<Space>nh`：通知历史
 - `<Space>nd`：清空通知
 - `<Space>hc`：查看键位列表
+- `<Space>hp`：启动 HTML 预览
+- `<Space>hP`：停止 HTML 预览
+- `<Space>ht`：切换 HTML 预览
 - `<Space>mp`：切换 Markdown 预览
+- `<Space>rr`：选择并运行项目任务
+- `<Space>rt`：切换任务列表
+- `<Space>rl`：重新运行上一次任务
+- `<Space>ra`：当前任务操作菜单
 - `<Space>uc`：切换顶部代码上下文
 - `<Space>co`：冲突块选择 ours
 - `<Space>ct`：冲突块选择 theirs

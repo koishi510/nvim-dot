@@ -14,12 +14,15 @@ return {
       ensure_installed = {
         "bashls",
         "clangd",
+        "docker_compose_language_service",
+        "dockerls",
         "elmls",
         "gopls",
         "html",
         "cssls",
         "lua_ls",
         "matlab_ls",
+        "neocmake",
         "basedpyright",
         "rust_analyzer",
         "texlab",
@@ -29,6 +32,7 @@ return {
         "jsonls",
         "yamlls",
       },
+      automatic_enable = false,
     },
   },
   {
@@ -60,8 +64,6 @@ return {
     },
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
-      local lspconfig = require("lspconfig")
-      local util = require("lspconfig.util")
       local vue_language_server_path = vim.fn.stdpath("data")
         .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
       local vue_plugin = {
@@ -92,35 +94,33 @@ return {
         end, "Format buffer")
       end
 
-      local function root_pattern(...)
-        local matcher = util.root_pattern(...)
-
-        return function(fname)
-          return matcher(fname) or util.find_git_ancestor(fname) or util.path.dirname(fname)
-        end
-      end
-
       local servers = {
         bashls = {
-          root_dir = root_pattern(".git", "Makefile"),
+          root_markers = { "Makefile", ".git" },
         },
         clangd = {
-          root_dir = root_pattern("compile_commands.json", "compile_flags.txt", ".clangd", "CMakeLists.txt", ".git"),
+          root_markers = { "compile_commands.json", "compile_flags.txt", ".clangd", "CMakeLists.txt", ".git" },
         },
         gopls = {
-          root_dir = root_pattern("go.work", "go.mod", ".git"),
+          root_markers = { "go.work", "go.mod", ".git" },
         },
         html = {
-          root_dir = root_pattern("package.json", ".git"),
+          root_markers = { "package.json", ".git" },
         },
         cssls = {
-          root_dir = root_pattern("package.json", ".git"),
+          root_markers = { "package.json", ".git" },
+        },
+        docker_compose_language_service = {
+          root_markers = { "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml", ".git" },
+        },
+        dockerls = {
+          root_markers = { "Dockerfile", "Containerfile", ".git" },
         },
         elmls = {
-          root_dir = root_pattern("elm.json", ".git"),
+          root_markers = { "elm.json", ".git" },
         },
         lua_ls = {
-          root_dir = root_pattern(".luarc.json", ".luarc.jsonc", ".stylua.toml", "stylua.toml", "lua", ".git"),
+          root_markers = { ".luarc.json", ".luarc.jsonc", ".stylua.toml", "stylua.toml", "lua", ".git" },
           settings = {
             Lua = {
               diagnostics = {
@@ -133,10 +133,13 @@ return {
           },
         },
         matlab_ls = {
-          root_dir = root_pattern("matlab.prj", "startup.m", "Contents.m", ".git"),
+          root_markers = { "matlab.prj", "startup.m", "Contents.m", ".git" },
+        },
+        neocmake = {
+          root_markers = { "CMakePresets.json", "CTestConfig.cmake", "CMakeLists.txt", "cmake", ".git" },
         },
         basedpyright = {
-          root_dir = root_pattern(
+          root_markers = {
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
@@ -144,7 +147,7 @@ return {
             "Pipfile",
             "pyrightconfig.json",
             ".git"
-          ),
+          },
           settings = {
             basedpyright = {
               analysis = {
@@ -154,19 +157,25 @@ return {
           },
         },
         jsonls = {
-          root_dir = root_pattern("package.json", ".git"),
+          root_markers = { "package.json", ".git" },
         },
         rust_analyzer = {
-          root_dir = root_pattern("Cargo.toml", "rust-project.json", ".git"),
+          root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+          settings = {
+            ["rust-analyzer"] = {
+              check = {
+                command = "clippy",
+              },
+            },
+          },
         },
         texlab = {
-          root_dir = root_pattern(".latexmkrc", "latexmkrc", ".git"),
+          root_markers = { ".latexmkrc", "latexmkrc", ".git" },
         },
         verible = {
-          root_dir = root_pattern(".svlangserver", ".svlint.toml", "verible.filelist", "filelist.f", "files.f", ".git"),
+          root_markers = { ".svlangserver", ".svlint.toml", "verible.filelist", "filelist.f", "files.f", ".git" },
         },
         vtsls = {
-          root_dir = root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
           filetypes = {
             "javascript",
             "javascriptreact",
@@ -185,23 +194,19 @@ return {
           },
         },
         vue_ls = {
-          root_dir = root_pattern("package.json", "vue.config.js", "vite.config.ts", "vite.config.js", ".git"),
+          root_markers = { "package.json", "vue.config.js", "vite.config.ts", "vite.config.js", ".git" },
         },
         yamlls = {
-          root_dir = root_pattern(".yamllint", ".yamllint.yaml", ".yamllint.yml", ".git"),
+          root_markers = { ".yamllint", ".yamllint.yaml", ".yamllint.yml", ".git" },
         },
       }
 
-      require("mason-lspconfig").setup({
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = capabilities
-            server.on_attach = on_attach
-            lspconfig[server_name].setup(server)
-          end,
-        },
-      })
+      for server_name, server in pairs(servers) do
+        server.capabilities = capabilities
+        server.on_attach = on_attach
+        vim.lsp.config(server_name, server)
+        vim.lsp.enable(server_name)
+      end
 
       vim.diagnostic.config({
         float = { border = "rounded" },
