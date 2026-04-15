@@ -23,6 +23,13 @@ return {
             text_align = "left",
             separator = false,
           },
+          {
+            filetype = "snacks_terminal",
+            text = "Terminal",
+            highlight = "Directory",
+            text_align = "right",
+            separator = false,
+          },
         },
         separator_style = { "", "" },
       },
@@ -48,6 +55,7 @@ return {
     opts = {
       preset = "modern",
       spec = {
+        { "<leader>a", group = "ai" },
         { "<leader>b", group = "buffer" },
         { "<leader>c", group = "conflict" },
         { "<leader>f", group = "find" },

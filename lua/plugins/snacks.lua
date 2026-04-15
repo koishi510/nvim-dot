@@ -1,3 +1,30 @@
+local function main_window()
+  local function is_main_window(win)
+    if vim.api.nvim_win_get_config(win).relative ~= "" then
+      return false
+    end
+
+    local buf = vim.api.nvim_win_get_buf(win)
+    local buftype = vim.bo[buf].buftype
+    local filetype = vim.bo[buf].filetype
+
+    return buftype ~= "terminal" and filetype ~= "snacks_layout_box" and filetype ~= "snacks_terminal"
+  end
+
+  local current = vim.api.nvim_get_current_win()
+  if is_main_window(current) then
+    return current
+  end
+
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if is_main_window(win) then
+      return win
+    end
+  end
+
+  return current
+end
+
 return {
   {
     "folke/snacks.nvim",
@@ -211,14 +238,22 @@ return {
       {
         "<leader>tt",
         function()
-          Snacks.terminal(nil, { count = 1 })
+          Snacks.terminal(nil, { count = 1, win = { position = "float" } })
         end,
         desc = "Float terminal",
       },
       {
         "<leader>th",
         function()
-          Snacks.terminal(nil, { count = 2, win = { position = "bottom", height = 0.22 } })
+          Snacks.terminal(nil, {
+            count = 2,
+            win = {
+              position = "bottom",
+              relative = "win",
+              win = main_window(),
+              height = 0.3,
+            },
+          })
         end,
         desc = "Horizontal terminal",
       },

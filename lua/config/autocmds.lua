@@ -88,6 +88,15 @@ autocmd("VimResized", {
   end,
 })
 
+autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+  desc = "Reload files changed by external tools",
+  callback = function()
+    if vim.fn.mode() ~= "c" then
+      vim.cmd.checktime()
+    end
+  end,
+})
+
 autocmd({ "BufEnter", "BufWinEnter" }, {
   desc = "Use project root as cwd for project files",
   callback = function(args)

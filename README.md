@@ -11,8 +11,9 @@
 - 自动识别项目根目录，避免从非项目根启动时 LSP / formatter 找错工作目录
 - `conform.nvim` 自动格式化
 - `nvim-lint` 代码检查
-- `nvim-cmp` + `LuaSnip` 自动补全
+- `nvim-cmp` + `LuaSnip` 补全，Copilot ghost text 内联建议
 - `cmp-cmdline` / `cmp-dictionary` / `lspkind-nvim` 命令行补全、字典补全与补全图标
+- Codex / Claude / Gemini / OpenCode 终端 agent 快捷入口
 - `bufferline.nvim` 顶部标签栏
 - `diffview.nvim` Git diff / file history / merge 视图
 - `flash.nvim` 快速跳转
@@ -144,6 +145,10 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>fb`：切换缓冲区
 - `<Space>fh`：帮助文档
 - `<Space>fr`：最近文件
+- `<Space>ac`：打开 Claude agent
+- `<Space>ax`：打开 Codex agent
+- `<Space>ag`：打开 Gemini agent
+- `<Space>ao`：打开 OpenCode agent
 - `<Space>bd`：关闭当前标签；如果这是最后一个文件，则按关闭处理
 - `<Space>bp`：固定当前标签
 - `<Space>bo`：关闭其他标签
