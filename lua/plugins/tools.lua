@@ -97,6 +97,10 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       local lint = require("lint")
+      lint.linters.cpplint.args = {
+        "--filter=-legal/copyright",
+      }
+
       local lint_specs = {
         bash = { "shellcheck" },
         c = { "clangtidy", "cppcheck", "cpplint" },

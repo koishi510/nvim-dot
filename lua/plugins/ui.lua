@@ -55,7 +55,7 @@ return {
     opts = {
       preset = "modern",
       spec = {
-        { "<leader>a", group = "ai" },
+        { "<leader>a", group = "agent" },
         { "<leader>b", group = "buffer" },
         { "<leader>c", group = "conflict" },
         { "<leader>f", group = "find" },

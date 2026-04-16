@@ -17,28 +17,28 @@ return {
         function()
           agent_terminal("claude", 20)
         end,
-        desc = "Claude agent",
+        desc = "Claude",
       },
       {
         "<leader>ax",
         function()
           agent_terminal("codex", 21)
         end,
-        desc = "Codex agent",
+        desc = "Codex",
       },
       {
         "<leader>ag",
         function()
           agent_terminal("gemini", 22)
         end,
-        desc = "Gemini agent",
+        desc = "Gemini",
       },
       {
         "<leader>ao",
         function()
           agent_terminal("opencode", 23)
         end,
-        desc = "OpenCode agent",
+        desc = "OpenCode",
       },
     },
   },
