@@ -1,5 +1,14 @@
 local autocmd = vim.api.nvim_create_autocmd
 
+vim.filetype.add({
+  extension = {
+    asm = "asm",
+    nasm = "asm",
+    s = "asm",
+    S = "asm",
+  },
+})
+
 local root_markers = {
   ".git",
   "package.json",
@@ -15,6 +24,8 @@ local root_markers = {
   "CMakeLists.txt",
   "CMakePresets.json",
   "CTestConfig.cmake",
+  "build.zig",
+  "zls.json",
   "cmake",
   "Containerfile",
   "Dockerfile",

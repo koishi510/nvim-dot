@@ -1,4 +1,5 @@
 local languages = {
+  "asm",
   "c",
   "cmake",
   "cpp",
@@ -23,12 +24,14 @@ local languages = {
   "rust",
   "systemverilog",
   "bibtex",
+  "toml",
   "tsx",
   "typescript",
   "vue",
   "vim",
   "vimdoc",
   "yaml",
+  "zig",
 }
 
 return {

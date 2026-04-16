@@ -25,12 +25,14 @@ return {
         "neocmake",
         "basedpyright",
         "rust_analyzer",
+        "taplo",
         "texlab",
         "verible",
         "vtsls",
         "vue_ls",
         "jsonls",
         "yamlls",
+        "zls",
       },
       automatic_enable = false,
     },
@@ -169,6 +171,9 @@ return {
             },
           },
         },
+        taplo = {
+          root_markers = { "taplo.toml", ".taplo.toml", "Cargo.toml", "pyproject.toml", ".git" },
+        },
         texlab = {
           root_markers = { ".latexmkrc", "latexmkrc", ".git" },
         },
@@ -198,6 +203,9 @@ return {
         },
         yamlls = {
           root_markers = { ".yamllint", ".yamllint.yaml", ".yamllint.yml", ".git" },
+        },
+        zls = {
+          root_markers = { "zls.json", "build.zig", ".git" },
         },
       }
 
