@@ -8,9 +8,7 @@ return {
       "LiveServerToggle",
     },
     keys = {
-      { "<leader>hp", "<cmd>LiveServerStart<cr>", desc = "Start HTML preview" },
-      { "<leader>hP", "<cmd>LiveServerStop<cr>", desc = "Stop HTML preview" },
-      { "<leader>ht", "<cmd>LiveServerToggle<cr>", desc = "Toggle HTML preview" },
+      { "<leader>ph", "<cmd>LiveServerToggle<cr>", desc = "Preview HTML" },
     },
   },
 }

@@ -30,7 +30,6 @@
 - `trouble.nvim` 诊断与列表面板
 - `vimtex` + `texlab` LaTeX 支持
 - `vim-visual-multi` 多光标编辑
-- `vimwiki` + `taskwiki` 知识管理与任务流
 - `overseer.nvim` 项目任务运行器
 - HTML 浏览器实时预览
 - Markdown 渲染与浏览器预览
@@ -61,12 +60,6 @@
 如果你要使用 LaTeX 预览，还需要安装一个 PDF 查看器，例如：
 
 - Linux: `zathura`
-
-如果你要使用 `taskwiki`，还需要 Python 包：
-
-```bash
-pip install tasklib pynvim
-```
 
 ### 2. 放置配置目录
 
@@ -152,15 +145,13 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>bd`：关闭当前标签；如果这是最后一个文件，则按关闭处理
 - `<Space>bp`：固定当前标签
 - `<Space>bo`：关闭其他标签
-- `<Space>f`：格式化当前文件
 - `<Space>jj`：Flash 快速跳转
 - `<Space>jt`：Flash treesitter 跳转
-- `<Space>jr`：Flash 远程操作
+- `<Space>jR`：Flash 远程操作
 - `<Space>js`：Flash treesitter 搜索
 - `<Space>o`：切换符号大纲
 - `<Space>sd`：当前文件符号
 - `<Space>sw`：工作区符号
-- `<Space>ip`：粘贴剪贴板图片
 - `<Space>ft`：搜索 TODO 注释
 - `<Space>fq`：TODO quickfix 列表
 - `<Space>gg`：打开 lazygit
@@ -171,23 +162,22 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>tt`：打开浮动终端
 - `<Space>th`：打开横向终端
 - `<Space>tv`：打开纵向终端
-- `<Space>tg`：在终端中打开 lazygit
 - `<C-Up>` / `<C-Down>` / `<C-Left>` / `<C-Right>`：调整当前分屏大小
 - `<Space>z`：Zen 模式
 - `<Space>.`：切换 scratch
 - `<Space>S`：scratch 列表
 - `<Space>nh`：通知历史
 - `<Space>nd`：清空通知
-- `<Space>hc`：查看键位列表
-- `<Space>hp`：启动 HTML 预览
-- `<Space>hP`：停止 HTML 预览
-- `<Space>ht`：切换 HTML 预览
-- `<Space>mp`：切换 Markdown 预览
+- `<Space>h`：查看键位列表
+- `<Space>ph`：切换 HTML 预览
+- `<Space>pi`：粘贴剪贴板图片
+- `<Space>pm`：切换 Markdown 预览
 - `<Space>rr`：选择并运行项目任务
 - `<Space>rt`：切换任务列表
 - `<Space>rl`：重新运行上一次任务
 - `<Space>ra`：当前任务操作菜单
-- `<Space>uc`：切换顶部代码上下文
+- `<Space>la`：Code action
+- `<Space>lf`：格式化当前文件
 - `<Space>co`：冲突块选择 ours
 - `<Space>ct`：冲突块选择 theirs
 - `<Space>cb`：冲突块保留双方
@@ -195,18 +185,17 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>xx`：打开诊断面板
 - `<Space>xX`：打开当前 buffer 诊断面板
 - `<Space>xq`：打开 quickfix 面板
+- `<Space>xQ`：切换原生 quickfix 窗口
 - `<Space>xl`：打开 location list 面板
 - `<Space>xs`：打开 symbols 面板
-- `<Space>ww`：打开 wiki 首页
-- `<Space>wd`：打开 wiki 日记
-- `<Space>wn`：创建今天的 wiki 日记
-- `<Space>wt`：在新标签页打开 wiki 首页
-- `gd` / `gr` / `gs` / `gy`：定义 / 引用 / 实现 / 类型定义面板
+- `<Space>jd` / `<Space>jr` / `<Space>ji` / `<Space>jy`：定义 / 引用 / 实现 / 类型定义面板
 - `[c`：跳到当前顶部上下文
+- `[d` / `]d`：切换上一个/下一个 diagnostic
 - `[h` / `]h`：切换上一个/下一个 git hunk
+- `[q` / `]q`：切换上一个/下一个 quickfix
 - `[t` / `]t`：切换上一个/下一个 TODO
 - `[x` / `]x`：切换上一个/下一个冲突标记
-- `[[` / `]]`：切换上一个/下一个引用
+- `[r` / `]r`：切换上一个/下一个引用
 - `zR` / `zM`：打开 / 关闭所有折叠
 - `<Esc><Esc>`：退出终端模式
 - `/` / `?` / `:`：启用命令行补全
@@ -226,18 +215,10 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
   - `\lk`：上一条错误
   - `\lj`：下一条错误
 
-## Knowledge
+## Images
 
-- 已启用 `vimwiki`，默认路径是 `~/vimwiki/`
-- 默认使用 Markdown 语法，扩展名 `.md`
-- 已启用 `taskwiki`，可在 wiki 页面中管理 `Taskwarrior` 任务
-- 已启用 `image.nvim`，在 `markdown` / `vimwiki` 文件里可直接在终端显示图片
-- 已启用 `img-clip.nvim`，可把剪贴板图片嵌入 `markdown` / `vimwiki` / `tex`
-- 常用 wiki 键位：
-  - `<Space>ww`：首页
-  - `<Space>wd`：日记索引
-  - `<Space>wn`：今天的日记
-  - `<Space>wt`：在新标签页打开首页
+- 已启用 `image.nvim`，在 `markdown` 文件里可直接在终端显示图片
+- 已启用 `img-clip.nvim`，可把剪贴板图片嵌入 `markdown` / `tex`
 
 ## Git Conflict
 

@@ -31,7 +31,3 @@ opt.clipboard = "unnamedplus"
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.undofile = true
 opt.autoread = true
-
-vim.schedule(function()
-  opt.clipboard = "unnamedplus"
-end)

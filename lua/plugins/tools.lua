@@ -8,7 +8,6 @@ return {
       ensure_installed = {
         "bibtex-tidy",
         "checkmake",
-        "cpplint",
         "shellcheck",
         "shfmt",
         "stylua",
@@ -43,9 +42,12 @@ return {
       formatters = {
         clang_format = {
           inherit = true,
-          prepend_args = {
-            "-style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}",
-          },
+          prepend_args = function(self, ctx)
+            if vim.fs.find({ ".clang-format" }, { upward = true, path = ctx.dirname })[1] then
+              return {}
+            end
+            return { "-style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}" }
+          end,
         },
       },
       format_on_save = function(bufnr)
@@ -53,43 +55,45 @@ return {
           c = true,
           cpp = true,
         }
-
+        if disable_filetypes[vim.bo[bufnr].filetype] then
+          return nil
+        end
         return {
           timeout_ms = 1500,
-          lsp_format = disable_filetypes[vim.bo[bufnr].filetype] and "fallback" or "prefer",
+          lsp_format = "fallback",
         }
       end,
       formatters_by_ft = {
         bash = { "shfmt" },
         bibtex = { "bibtex-tidy" },
         c = { "clang_format" },
-        cmake = { "gersemi", "cmake_format" },
+        cmake = { { "gersemi", "cmake_format" } },
         cpp = { "clang_format" },
-        css = { "prettierd", "prettier" },
+        css = { { "prettierd", "prettier" } },
         elm = { "elm_format" },
-        go = { "goimports", "gofumpt", "gofmt" },
-        html = { "prettierd", "prettier" },
-        javascript = { "prettierd", "prettier" },
-        javascriptreact = { "prettierd", "prettier" },
-        json = { "prettierd", "prettier" },
+        go = { "goimports", "gofumpt" },
+        html = { { "prettierd", "prettier" } },
+        javascript = { { "prettierd", "prettier" } },
+        javascriptreact = { { "prettierd", "prettier" } },
+        json = { { "prettierd", "prettier" } },
         latex = { "tex-fmt" },
         lua = { "stylua" },
-        markdown = { "prettierd", "prettier" },
+        markdown = { { "prettierd", "prettier" } },
         matlab = { "mh_style" },
-        python = { "ruff_format", "black" },
+        python = { "ruff_format" },
         query = { "format-queries" },
         rust = { "rustfmt" },
         sh = { "shfmt" },
-        tsx = { "prettierd", "prettier" },
-        typescript = { "prettierd", "prettier" },
-        typescriptreact = { "prettierd", "prettier" },
+        tsx = { { "prettierd", "prettier" } },
+        typescript = { { "prettierd", "prettier" } },
+        typescriptreact = { { "prettierd", "prettier" } },
         vim = { "trim_whitespace" },
         vimdoc = { "trim_whitespace" },
         verilog = { "verible" },
-        vue = { "prettierd", "prettier" },
+        vue = { { "prettierd", "prettier" } },
         systemverilog = { "verible" },
         toml = { "taplo" },
-        yaml = { "prettierd", "prettier" },
+        yaml = { { "prettierd", "prettier" } },
         zig = { "zigfmt" },
         zsh = { "shfmt" },
       },
@@ -100,26 +104,23 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       local lint = require("lint")
-      lint.linters.cpplint.args = {
-        "--filter=-legal/copyright",
-      }
 
       local lint_specs = {
         bash = { "shellcheck" },
-        c = { "clangtidy", "cppcheck", "cpplint" },
-        cmake = { "cmake_lint", "cmakelint" },
-        cpp = { "clangtidy", "cppcheck", "cpplint" },
+        c = { "clangtidy" },
+        cmake = { "cmakelint" },
+        cpp = { "clangtidy" },
         css = { "stylelint" },
         dockerfile = { "hadolint" },
         go = { "golangcilint" },
-        javascript = { "eslint_d", "eslint" },
-        javascriptreact = { "eslint_d", "eslint" },
+        javascript = { "eslint_d" },
+        javascriptreact = { "eslint_d" },
         make = { "checkmake" },
         python = { "ruff" },
         sh = { "shellcheck" },
-        typescript = { "eslint_d", "eslint" },
-        typescriptreact = { "eslint_d", "eslint" },
-        vue = { "eslint_d", "eslint" },
+        typescript = { "eslint_d" },
+        typescriptreact = { "eslint_d" },
+        vue = { "eslint_d" },
         zsh = { "shellcheck" },
       }
       local warned = {}
@@ -171,7 +172,7 @@ return {
 
       local group = vim.api.nvim_create_augroup("nvim-lint", { clear = true })
 
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
         group = group,
         callback = function(args)
           try_lint(args.buf)
@@ -180,7 +181,7 @@ return {
 
       vim.keymap.set("n", "<leader>ll", function()
         try_lint()
-      end, { desc = "Run lint" })
+      end, { desc = "Lint buffer" })
     end,
   },
 }

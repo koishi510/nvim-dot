@@ -8,9 +8,9 @@ return {
         enabled = true,
         auto_trigger = true,
         keymap = {
-          accept = "<S-CR>",
-          next = "]a",
-          prev = "[a",
+          accept = "<M-l>",
+          next = "<M-]>",
+          prev = "<M-[>",
         },
       },
       panel = {

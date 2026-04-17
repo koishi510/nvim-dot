@@ -53,19 +53,25 @@ return {
       },
     },
     keys = {
-      { "gd", "<cmd>Glance definitions<cr>", desc = "Definitions" },
-      { "gr", "<cmd>Glance references<cr>", desc = "References" },
-      { "gs", "<cmd>Glance implementations<cr>", desc = "Implementations" },
-      { "gy", "<cmd>Glance type_definitions<cr>", desc = "Type definitions" },
+      { "<leader>jd", "<cmd>Glance definitions<cr>", desc = "Show definitions" },
+      { "<leader>jr", "<cmd>Glance references<cr>", desc = "Show references" },
+      { "<leader>ji", "<cmd>Glance implementations<cr>", desc = "Show implementations" },
+      { "<leader>jy", "<cmd>Glance type_definitions<cr>", desc = "Show type definitions" },
     },
+  },
+  {
+    "b0o/SchemaStore.nvim",
+    lazy = true,
   },
   {
     "neovim/nvim-lspconfig",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
+      "b0o/SchemaStore.nvim",
     },
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local schemastore = require("schemastore")
       local vue_language_server_path = vim.fn.stdpath("data")
         .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
       local vue_plugin = {
@@ -80,20 +86,11 @@ return {
           vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
         end
 
-        map("n", "gK", vim.lsp.buf.hover, "Hover docs")
+        map("n", "gh", vim.lsp.buf.hover, "Hover docs")
         map("n", "<leader>sd", vim.lsp.buf.document_symbol, "Document symbols")
         map("n", "<leader>sw", vim.lsp.buf.workspace_symbol, "Workspace symbols")
         map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
-        map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
-        map("n", "<leader>f", function()
-          local ok, conform = pcall(require, "conform")
-          if ok then
-            conform.format({ async = true, lsp_fallback = true, bufnr = bufnr })
-            return
-          end
-
-          vim.lsp.buf.format({ async = true })
-        end, "Format buffer")
+        map("n", "<leader>la", vim.lsp.buf.code_action, "Code action")
       end
 
       local servers = {
@@ -160,6 +157,12 @@ return {
         },
         jsonls = {
           root_markers = { "package.json", ".git" },
+          settings = {
+            json = {
+              schemas = schemastore.json.schemas(),
+              validate = { enable = true },
+            },
+          },
         },
         rust_analyzer = {
           root_markers = { "Cargo.toml", "rust-project.json", ".git" },
@@ -203,6 +206,15 @@ return {
         },
         yamlls = {
           root_markers = { ".yamllint", ".yamllint.yaml", ".yamllint.yml", ".git" },
+          settings = {
+            yaml = {
+              schemaStore = {
+                enable = false,
+                url = "",
+              },
+              schemas = schemastore.yaml.schemas(),
+            },
+          },
         },
         zls = {
           root_markers = { "zls.json", "build.zig", ".git" },
@@ -219,7 +231,14 @@ return {
       vim.diagnostic.config({
         float = { border = "rounded" },
         severity_sort = true,
-        signs = true,
+        signs = {
+          text = {
+            [vim.diagnostic.severity.ERROR] = "",
+            [vim.diagnostic.severity.WARN] = "",
+            [vim.diagnostic.severity.INFO] = "",
+            [vim.diagnostic.severity.HINT] = "",
+          },
+        },
         underline = true,
         update_in_insert = false,
         virtual_text = {

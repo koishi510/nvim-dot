@@ -1,5 +1,44 @@
 local autocmd = vim.api.nvim_create_autocmd
 
+do
+  local function extend_to_word(bufnr, diagnostics)
+    if not vim.api.nvim_buf_is_loaded(bufnr) then
+      return diagnostics
+    end
+    local out = {}
+    for _, d in ipairs(diagnostics) do
+      local end_lnum = d.end_lnum or d.lnum
+      local end_col = d.end_col or d.col
+      local needs_fix = end_lnum == d.lnum and end_col <= d.col + 1
+      if needs_fix then
+        local line = vim.api.nvim_buf_get_lines(bufnr, d.lnum, d.lnum + 1, false)[1]
+        if line and #line > d.col then
+          local rest = line:sub(d.col + 1)
+          local word = rest:match("^[%w_]+") or rest:match("^%S+")
+          if word and #word > 1 then
+            d = vim.tbl_extend("force", d, {
+              end_lnum = d.lnum,
+              end_col = d.col + #word,
+            })
+          end
+        end
+      end
+      table.insert(out, d)
+    end
+    return out
+  end
+
+  for _, name in ipairs({ "underline", "virtual_text" }) do
+    local handler = vim.diagnostic.handlers[name]
+    if handler and handler.show then
+      local orig_show = handler.show
+      handler.show = function(ns, bufnr, diagnostics, opts)
+        return orig_show(ns, bufnr, extend_to_word(bufnr, diagnostics), opts)
+      end
+    end
+  end
+end
+
 vim.filetype.add({
   extension = {
     asm = "asm",
@@ -85,6 +124,20 @@ local function apply_tutor_window(win, buf)
   vim.wo[win].statuscolumn = "%s%=%l "
 end
 
+autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.h",
+  desc = "Treat .h headers as C++ when sibling C++ sources exist",
+  callback = function(args)
+    local dir = vim.fs.dirname(args.file)
+    if dir == "" or dir == nil then
+      return
+    end
+    if vim.fn.glob(dir .. "/*.cpp") ~= "" or vim.fn.glob(dir .. "/*.cc") ~= "" or vim.fn.glob(dir .. "/*.cxx") ~= "" then
+      vim.bo[args.buf].filetype = "cpp"
+    end
+  end,
+})
+
 autocmd("TextYankPost", {
   desc = "Highlight when yanking text",
   callback = function()
@@ -99,7 +152,7 @@ autocmd("VimResized", {
   end,
 })
 
-autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+autocmd({ "FocusGained", "BufEnter" }, {
   desc = "Reload files changed by external tools",
   callback = function()
     if vim.fn.mode() ~= "c" then
@@ -108,7 +161,7 @@ autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
   end,
 })
 
-autocmd({ "BufEnter", "BufWinEnter" }, {
+autocmd("BufReadPost", {
   desc = "Use project root as cwd for project files",
   callback = function(args)
     if vim.bo[args.buf].buftype ~= "" then

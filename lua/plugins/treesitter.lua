@@ -48,6 +48,21 @@ return {
       treesitter.setup({})
       vim.treesitter.language.register("systemverilog", { "verilog", "systemverilog" })
 
+      local installed = treesitter.get_installed and treesitter.get_installed("parsers") or {}
+      local have = {}
+      for _, name in ipairs(installed) do
+        have[name] = true
+      end
+      local missing = {}
+      for _, lang in ipairs(languages) do
+        if not have[lang] then
+          table.insert(missing, lang)
+        end
+      end
+      if #missing > 0 then
+        treesitter.install(missing)
+      end
+
       vim.api.nvim_create_autocmd("FileType", {
         pattern = languages,
         callback = function(args)

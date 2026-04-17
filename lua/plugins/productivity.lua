@@ -10,7 +10,7 @@ return {
         function()
           require("flash").jump()
         end,
-        desc = "Flash jump",
+        desc = "Jump",
       },
       {
         "<leader>jt",
@@ -18,15 +18,15 @@ return {
         function()
           require("flash").treesitter()
         end,
-        desc = "Flash treesitter",
+        desc = "Treesitter jump",
       },
       {
-        "<leader>jr",
+        "<leader>jR",
         mode = { "n", "o", "x" },
         function()
           require("flash").remote()
         end,
-        desc = "Remote flash",
+        desc = "Remote jump",
       },
       {
         "<leader>js",
@@ -45,23 +45,16 @@ return {
       max_lines = 5,
       min_window_height = 20,
       multiline_threshold = 4,
-      mode = "cursor",
+      mode = "topline",
       trim_scope = "outer",
     },
     keys = {
-      {
-        "<leader>uc",
-        function()
-          require("treesitter-context").toggle()
-        end,
-        desc = "Toggle code context",
-      },
       {
         "[c",
         function()
           require("treesitter-context").go_to_context(vim.v.count1)
         end,
-        desc = "Go to context",
+        desc = "Code context",
       },
     },
   },
@@ -69,6 +62,9 @@ return {
     "nvim-mini/mini.ai",
     version = false,
     event = "VeryLazy",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
     config = function()
       local ai = require("mini.ai")
 
@@ -98,12 +94,16 @@ return {
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
     end,
-    opts = {},
+    opts = {
+      provider_selector = function(_, _, _)
+        return { "treesitter", "indent" }
+      end,
+    },
     keys = {
       { "zR", function() require("ufo").openAllFolds() end, desc = "Open all folds" },
       { "zM", function() require("ufo").closeAllFolds() end, desc = "Close all folds" },
       { "zr", function() require("ufo").openFoldsExceptKinds() end, desc = "Open folds" },
-      { "zm", function() require("ufo").closeFoldsWith() end, desc = "Close folds" },
+      { "zm", function() require("ufo").closeFoldsWith(vim.v.count1) end, desc = "Close folds" },
       {
         "gK",
         function()
@@ -146,17 +146,17 @@ return {
         function()
           require("todo-comments").jump_next()
         end,
-        desc = "Next todo comment",
+        desc = "Next TODO",
       },
       {
         "[t",
         function()
           require("todo-comments").jump_prev()
         end,
-        desc = "Previous todo comment",
+        desc = "Previous TODO",
       },
-      { "<leader>ft", "<cmd>TodoQuickFix<cr><cmd>copen<cr>", desc = "Find todos" },
-      { "<leader>fq", "<cmd>TodoQuickFix<cr>", desc = "Todo quickfix" },
+      { "<leader>ft", "<cmd>TodoQuickFix<cr><cmd>copen<cr>", desc = "Find TODOs" },
+      { "<leader>fq", "<cmd>TodoQuickFix<cr>", desc = "TODO quickfix" },
     },
   },
   {
@@ -182,7 +182,7 @@ return {
       },
     },
     keys = {
-      { "<leader>ip", "<cmd>PasteImage<cr>", desc = "Paste image" },
+      { "<leader>pi", "<cmd>PasteImage<cr>", desc = "Paste image" },
     },
   },
 }

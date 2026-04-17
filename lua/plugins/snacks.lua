@@ -176,7 +176,7 @@ return {
         function()
           Snacks.explorer()
         end,
-        desc = "Toggle explorer",
+        desc = "Open explorer",
       },
       {
         "<leader>ff",
@@ -214,11 +214,11 @@ return {
         desc = "Recent files",
       },
       {
-        "<leader>hc",
+        "<leader>h",
         function()
           Snacks.picker.keymaps()
         end,
-        desc = "Keymaps",
+        desc = "Find keymaps",
       },
       {
         "<leader>gg",
@@ -240,7 +240,7 @@ return {
         function()
           Snacks.terminal(nil, { count = 1, win = { position = "float" } })
         end,
-        desc = "Float terminal",
+        desc = "Floating terminal",
       },
       {
         "<leader>th",
@@ -265,25 +265,18 @@ return {
         desc = "Vertical terminal",
       },
       {
-        "<leader>tg",
-        function()
-          Snacks.terminal("lazygit")
-        end,
-        desc = "Terminal lazygit",
-      },
-      {
         "<leader>z",
         function()
           Snacks.zen()
         end,
-        desc = "Toggle zen",
+        desc = "Zen mode",
       },
       {
         "<leader>.",
         function()
           Snacks.scratch()
         end,
-        desc = "Toggle scratch",
+        desc = "Scratch",
       },
       {
         "<leader>S",
@@ -297,7 +290,7 @@ return {
         function()
           Snacks.notifier.show_history()
         end,
-        desc = "Notification history",
+        desc = "Show notifications",
       },
       {
         "<leader>nd",
@@ -307,7 +300,7 @@ return {
         desc = "Dismiss notifications",
       },
       {
-        "]]",
+        "]r",
         function()
           Snacks.words.jump(vim.v.count1)
         end,
@@ -315,11 +308,11 @@ return {
         mode = { "n", "t" },
       },
       {
-        "[[",
+        "[r",
         function()
           Snacks.words.jump(-vim.v.count1)
         end,
-        desc = "Prev reference",
+        desc = "Previous reference",
         mode = { "n", "t" },
       },
     },
