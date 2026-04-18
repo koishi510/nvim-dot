@@ -68,6 +68,8 @@ return {
         { "<leader>r", group = "run" },
         { "<leader>s", group = "symbol" },
         { "<leader>t", group = "terminal" },
+        { "<leader>v", group = "latex" },
+        { "<leader>y", group = "typst" },
         { "<leader>x", group = "trouble" },
         { "g", group = "goto" },
       },

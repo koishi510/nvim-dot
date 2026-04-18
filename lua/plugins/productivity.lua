@@ -179,6 +179,15 @@ return {
         html = {
           template = '<img src="$FILE_PATH" alt="$CURSOR">',
         },
+        tex = {
+          template = "\\includegraphics[width=0.8\\linewidth]{$FILE_PATH}",
+        },
+        latex = {
+          template = "\\includegraphics[width=0.8\\linewidth]{$FILE_PATH}",
+        },
+        typst = {
+          template = '#image("$FILE_PATH")',
+        },
       },
     },
     keys = {

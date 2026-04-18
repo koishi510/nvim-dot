@@ -1,5 +1,6 @@
 local map = vim.keymap.set
 local git = require("config.git")
+local typst = require("config.typst")
 
 local function delete_buffer()
   Snacks.bufdelete.delete()
@@ -76,6 +77,61 @@ local function toggle_quickfix()
   vim.cmd.copen()
 end
 
+local function open_preview()
+  local file = vim.api.nvim_buf_get_name(0)
+
+  if file == "" then
+    vim.notify("No file to preview", vim.log.levels.WARN)
+    return
+  end
+
+  local ext = vim.fn.fnamemodify(file, ":e"):lower()
+
+  if ext == "typ" then
+    typst.view()
+    return
+  end
+
+  local viewers = {
+    png = "imv",
+    jpg = "imv",
+    jpeg = "imv",
+    webp = "imv",
+    gif = "imv",
+    bmp = "imv",
+    svg = "imv",
+    pdf = "zathura",
+    mp4 = "mpv",
+    mkv = "mpv",
+    webm = "mpv",
+    mov = "mpv",
+    avi = "mpv",
+    flv = "mpv",
+    wmv = "mpv",
+    m4v = "mpv",
+    mp3 = "mpv",
+    flac = "mpv",
+    wav = "mpv",
+    ogg = "mpv",
+    opus = "mpv",
+    m4a = "mpv",
+    aac = "mpv",
+  }
+  local viewer = viewers[ext]
+
+  if not viewer then
+    vim.notify("No previewer for ." .. ext, vim.log.levels.WARN)
+    return
+  end
+
+  if vim.fn.executable(viewer) == 0 then
+    vim.notify(viewer .. " is not installed", vim.log.levels.ERROR)
+    return
+  end
+
+  vim.system({ viewer, file }, { detach = true })
+end
+
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
 map("n", "<leader>q", "<cmd>q<cr>", { desc = "Quit window" })
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search" })
@@ -88,6 +144,11 @@ map("n", "<leader>gf", git.set_conflict_qflist, { desc = "Conflict files" })
 map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File history" })
 map("n", "<leader>gm", "<cmd>DiffviewOpen<cr>", { desc = "Merge view" })
 map("n", "<leader>pm", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Preview Markdown" })
+map("n", "<leader>po", open_preview, { desc = "Open preview" })
+map("n", "<leader>yc", typst.compile, { desc = "Compile Typst" })
+map("n", "<leader>yv", typst.view, { desc = "View Typst PDF" })
+map("n", "<leader>yw", typst.watch, { desc = "Watch Typst" })
+map("n", "<leader>ys", typst.stop, { desc = "Stop Typst" })
 map("n", "<leader>ly", copy_line_diagnostics, { desc = "Copy line diagnostics" })
 map("n", "<leader>lY", copy_buffer_diagnostics, { desc = "Copy buffer diagnostics" })
 map("n", "<leader>xQ", toggle_quickfix, { desc = "Quickfix window" })

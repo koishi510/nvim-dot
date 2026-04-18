@@ -25,14 +25,15 @@ return {
         "neocmake",
         "basedpyright",
         "rust_analyzer",
+        "sqlls",
         "taplo",
         "texlab",
+        "tinymist",
         "verible",
         "vtsls",
         "vue_ls",
         "jsonls",
         "yamlls",
-        "zls",
       },
       automatic_enable = false,
     },
@@ -70,6 +71,7 @@ return {
       "b0o/SchemaStore.nvim",
     },
     config = function()
+      require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
       local schemastore = require("schemastore")
       local vue_language_server_path = vim.fn.stdpath("data")
@@ -116,7 +118,7 @@ return {
           root_markers = { "Dockerfile", "Containerfile", ".git" },
         },
         elmls = {
-          root_markers = { "elm.json", ".git" },
+          root_markers = { "elm.json" },
         },
         lua_ls = {
           root_markers = { ".luarc.json", ".luarc.jsonc", ".stylua.toml", "stylua.toml", "lua", ".git" },
@@ -136,6 +138,9 @@ return {
         },
         neocmake = {
           root_markers = { "CMakePresets.json", "CTestConfig.cmake", "CMakeLists.txt", "cmake", ".git" },
+        },
+        nginx_language_server = {
+          root_markers = { "nginx.conf", ".git" },
         },
         basedpyright = {
           root_markers = {
@@ -174,11 +179,17 @@ return {
             },
           },
         },
+        sqlls = {
+          root_markers = { ".sqllsrc.json", ".git" },
+        },
         taplo = {
           root_markers = { "taplo.toml", ".taplo.toml", "Cargo.toml", "pyproject.toml", ".git" },
         },
         texlab = {
           root_markers = { ".latexmkrc", "latexmkrc", ".git" },
+        },
+        tinymist = {
+          root_markers = { "typst.toml", ".git" },
         },
         verible = {
           root_markers = { ".svlangserver", ".svlint.toml", "verible.filelist", "filelist.f", "files.f", ".git" },
@@ -215,9 +226,6 @@ return {
               schemas = schemastore.yaml.schemas(),
             },
           },
-        },
-        zls = {
-          root_markers = { "zls.json", "build.zig", ".git" },
         },
       }
 

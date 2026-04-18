@@ -18,9 +18,13 @@ return {
         "eslint_d",
         "elm-format",
         "miss_hit",
+        "nginx-config-formatter",
+        "sql-formatter",
+        "sqlfluff",
         "stylelint",
         "taplo",
         "tex-fmt",
+        "typstyle",
         "verible",
         "ruff",
         "clang-format",
@@ -65,36 +69,39 @@ return {
       end,
       formatters_by_ft = {
         bash = { "shfmt" },
-        bibtex = { "bibtex-tidy" },
+        bib = { "bibtex-tidy" },
         c = { "clang_format" },
-        cmake = { { "gersemi", "cmake_format" } },
+        cmake = { "gersemi", "cmake_format", stop_after_first = true },
         cpp = { "clang_format" },
-        css = { { "prettierd", "prettier" } },
+        css = { "prettierd", "prettier", stop_after_first = true },
         elm = { "elm_format" },
         go = { "goimports", "gofumpt" },
-        html = { { "prettierd", "prettier" } },
-        javascript = { { "prettierd", "prettier" } },
-        javascriptreact = { { "prettierd", "prettier" } },
-        json = { { "prettierd", "prettier" } },
+        html = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+        json = { "prettierd", "prettier", stop_after_first = true },
         latex = { "tex-fmt" },
         lua = { "stylua" },
-        markdown = { { "prettierd", "prettier" } },
+        markdown = { "prettierd", "prettier", stop_after_first = true },
         matlab = { "mh_style" },
+        nginx = { "nginxfmt" },
+        plaintex = { "tex-fmt" },
         python = { "ruff_format" },
-        query = { "format-queries" },
         rust = { "rustfmt" },
         sh = { "shfmt" },
-        tsx = { { "prettierd", "prettier" } },
-        typescript = { { "prettierd", "prettier" } },
-        typescriptreact = { { "prettierd", "prettier" } },
+        sql = { "sql_formatter" },
+        tex = { "tex-fmt" },
+        tsx = { "prettierd", "prettier", stop_after_first = true },
+        typescript = { "prettierd", "prettier", stop_after_first = true },
+        typescriptreact = { "prettierd", "prettier", stop_after_first = true },
         vim = { "trim_whitespace" },
         vimdoc = { "trim_whitespace" },
         verilog = { "verible" },
-        vue = { { "prettierd", "prettier" } },
+        vue = { "prettierd", "prettier", stop_after_first = true },
         systemverilog = { "verible" },
         toml = { "taplo" },
-        yaml = { { "prettierd", "prettier" } },
-        zig = { "zigfmt" },
+        typst = { "typstyle" },
+        yaml = { "prettierd", "prettier", stop_after_first = true },
         zsh = { "shfmt" },
       },
     },
@@ -105,69 +112,167 @@ return {
     config = function()
       local lint = require("lint")
 
-      local lint_specs = {
-        bash = { "shellcheck" },
-        c = { "clangtidy" },
-        cmake = { "cmakelint" },
-        cpp = { "clangtidy" },
-        css = { "stylelint" },
-        dockerfile = { "hadolint" },
-        go = { "golangcilint" },
-        javascript = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        make = { "checkmake" },
-        python = { "ruff" },
-        sh = { "shellcheck" },
-        typescript = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
-        vue = { "eslint_d" },
-        zsh = { "shellcheck" },
+      lint.linters.elm_review = {
+        cmd = "elm-review",
+        args = { "--report=json" },
+        ignore_exitcode = true,
+        parser = function(output, bufnr, cwd)
+          if output == "" then
+            return {}
+          end
+
+          local ok, data = pcall(vim.json.decode, output)
+          if not ok or type(data) ~= "table" or type(data.errors) ~= "table" then
+            return {}
+          end
+
+          local diagnostics = {}
+          local current = vim.fs.normalize(vim.api.nvim_buf_get_name(bufnr))
+
+          for _, file in ipairs(data.errors) do
+            local path = file.path
+            if type(path) == "string" and not path:match("^/") then
+              path = vim.fs.joinpath(cwd, path)
+            end
+            path = type(path) == "string" and vim.fs.normalize(path) or nil
+
+            if path == current and type(file.errors) == "table" then
+              for _, item in ipairs(file.errors) do
+                local region = item.region or {}
+                local start = region.start or {}
+                local finish = region["end"] or {}
+                local message = item.message or item.rule or "elm-review"
+
+                if type(item.details) == "table" and #item.details > 0 then
+                  message = message .. "\n" .. table.concat(item.details, "\n")
+                end
+
+                table.insert(diagnostics, {
+                  lnum = math.max((start.line or 1) - 1, 0),
+                  col = math.max((start.column or 1) - 1, 0),
+                  end_lnum = math.max((finish.line or start.line or 1) - 1, 0),
+                  end_col = math.max((finish.column or start.column or 1) - 1, 0),
+                  severity = vim.diagnostic.severity.WARN,
+                  source = item.rule and ("elm-review: " .. item.rule) or "elm-review",
+                  message = message,
+                })
+              end
+            end
+          end
+
+          return diagnostics
+        end,
       }
-      local warned = {}
 
-      local function available(names)
-        local result = {}
-
-        for _, name in ipairs(names) do
-          local linter = lint.linters[name]
-          local cmd = linter and linter.cmd
-          local executable = type(cmd) == "string" and vim.fn.executable(cmd) == 1
-
-          if linter and (cmd == nil or executable) then
-            table.insert(result, name)
+      local function has_config(markers)
+        return function(bufnr)
+          local path = vim.api.nvim_buf_get_name(bufnr)
+          local dir = path ~= "" and vim.fs.dirname(path) or vim.fn.getcwd()
+          if vim.fs.find(markers, { upward = true, path = dir })[1] then
+            return {}
           end
         end
-
-        return result
       end
 
-      lint.linters_by_ft = vim.tbl_map(available, lint_specs)
+      local function root_cwd(markers, extra_cmd)
+        return function(bufnr)
+          local file = vim.api.nvim_buf_get_name(bufnr)
+          if file == "" then
+            return
+          end
+          local root = vim.fs.root(file, markers)
+          if not root then
+            return
+          end
+          if extra_cmd and vim.fn.executable(extra_cmd) ~= 1 then
+            return
+          end
+          return { cwd = root }
+        end
+      end
+
+      local has_clang = has_config({ "compile_commands.json", ".clang-tidy" })
+      local has_go_module = has_config({ "go.mod", "go.work" })
+      local has_eslint = has_config({
+        ".eslintrc",
+        ".eslintrc.js",
+        ".eslintrc.cjs",
+        ".eslintrc.mjs",
+        ".eslintrc.json",
+        ".eslintrc.yaml",
+        ".eslintrc.yml",
+        "eslint.config.js",
+        "eslint.config.cjs",
+        "eslint.config.mjs",
+        "eslint.config.ts",
+      })
+      local has_stylelint = has_config({
+        ".stylelintrc",
+        ".stylelintrc.json",
+        ".stylelintrc.yaml",
+        ".stylelintrc.yml",
+        ".stylelintrc.js",
+        ".stylelintrc.cjs",
+        ".stylelintrc.mjs",
+        "stylelint.config.js",
+        "stylelint.config.cjs",
+        "stylelint.config.mjs",
+      })
+
+      local lint_specs = {
+        bash = { linters = { "shellcheck" } },
+        c = { linters = { "clangtidy" }, setup = has_clang },
+        cmake = { linters = { "cmake_lint" } },
+        cpp = { linters = { "clangtidy" }, setup = has_clang },
+        css = { linters = { "stylelint" }, setup = has_stylelint },
+        dockerfile = { linters = { "hadolint" } },
+        elm = { linters = { "elm_review" }, setup = root_cwd("elm.json") },
+        go = { linters = { "golangcilint" }, setup = has_go_module },
+        javascript = { linters = { "eslint_d" }, setup = has_eslint },
+        javascriptreact = { linters = { "eslint_d" }, setup = has_eslint },
+        make = { linters = { "checkmake" } },
+        python = { linters = { "ruff" } },
+        sh = { linters = { "shellcheck" } },
+        sql = { linters = { "sqlfluff" }, setup = root_cwd(".sqlfluff") },
+        typescript = { linters = { "eslint_d" }, setup = has_eslint },
+        typescriptreact = { linters = { "eslint_d" }, setup = has_eslint },
+        vue = { linters = { "eslint_d" }, setup = has_eslint },
+        zsh = { linters = { "shellcheck" } },
+      }
+
+      lint.linters_by_ft = vim.tbl_map(function(spec)
+        return spec.linters
+      end, lint_specs)
 
       local function try_lint(bufnr)
         bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+        if vim.bo[bufnr].buftype ~= "" then
+          return
+        end
+
         local ft = vim.bo[bufnr].filetype
-        local names = lint_specs[ft]
-        local linters = names and available(names) or nil
+        local spec = lint_specs[ft]
+        if not spec then
+          return
+        end
+
         local line_count = vim.api.nvim_buf_line_count(bufnr)
         local first_line = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] or ""
-
-        if names and line_count <= 1 and first_line == "" then
+        if line_count <= 1 and first_line == "" then
           return
         end
 
-        if names and #names > 0 and (#linters == 0) then
-          local key = ft .. ":" .. table.concat(names, ",")
-          if not warned[key] then
-            warned[key] = true
-            vim.notify(
-              string.format("No linters available for %s. Install one of: %s", ft, table.concat(names, ", ")),
-              vim.log.levels.WARN
-            )
+        local opts = {}
+        if spec.setup then
+          local result = spec.setup(bufnr)
+          if result == nil then
+            return
           end
-          return
+          opts = result
         end
 
-        lint.try_lint(linters)
+        lint.try_lint(spec.linters, opts)
       end
 
       local group = vim.api.nvim_create_augroup("nvim-lint", { clear = true })

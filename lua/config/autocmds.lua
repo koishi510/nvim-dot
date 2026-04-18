@@ -45,6 +45,9 @@ vim.filetype.add({
     nasm = "asm",
     s = "asm",
     S = "asm",
+    mly = "menhir",
+    typ = "typst",
+    v = "verilog",
   },
 })
 
@@ -63,8 +66,7 @@ local root_markers = {
   "CMakeLists.txt",
   "CMakePresets.json",
   "CTestConfig.cmake",
-  "build.zig",
-  "zls.json",
+  "nginx.conf",
   "cmake",
   "Containerfile",
   "Dockerfile",
@@ -73,6 +75,8 @@ local root_markers = {
   "docker-compose.yaml",
   "docker-compose.yml",
   "elm.json",
+  ".sqllsrc.json",
+  ".sqlfluff",
   ".svlangserver",
   ".svlint.toml",
   "verible.filelist",
@@ -141,7 +145,7 @@ autocmd({ "BufRead", "BufNewFile" }, {
 autocmd("TextYankPost", {
   desc = "Highlight when yanking text",
   callback = function()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
 })
 

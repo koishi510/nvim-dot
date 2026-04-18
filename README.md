@@ -49,7 +49,10 @@
 - `fd`
 - `lazygit`
 - LaTeX 工具链: `latexmk`
+- Typst 工具链: `typst`
 - `ImageMagick`
+- `imv`
+- `mpv`
 - `taskwarrior`
 
 如果你要使用系统剪贴板，还需要安装：
@@ -104,7 +107,7 @@ nvim
 ### 4. 安装语言解析器
 
 ```vim
-:TSInstall bash bibtex c cmake cpp css dockerfile elm go html javascript json latex lua make matlab markdown markdown_inline powershell python query regex rust systemverilog tsx typescript vue vim vimdoc yaml
+:TSInstall bash bibtex c cmake cpp css dockerfile elm go html javascript json latex lua make matlab menhir markdown markdown_inline nginx powershell python query regex rust sql systemverilog toml tsx typescript typst vue vim vimdoc yaml
 ```
 
 ### 5. 安装 LSP 和格式化工具
@@ -117,8 +120,13 @@ nvim
 
 确认这些工具已安装：
 
-- LSP: `bashls` `clangd` `docker_compose_language_service` `dockerls` `elmls` `gopls` `html` `cssls` `lua_ls` `matlab_ls` `neocmake` `basedpyright` `rust_analyzer` `texlab` `verible` `vtsls` `vue_ls` `jsonls` `yamlls`
-- Formatter / Linter: `bibtex-tidy` `checkmake` `cpplint` `shfmt` `shellcheck` `stylua` `prettierd` `cmakelang` `gersemi` `hadolint` `eslint_d` `elm-format` `miss_hit` `stylelint` `tex-fmt` `verible` `ruff` `clang-format` `gofumpt` `goimports` `golangci-lint`
+- LSP: `bashls` `clangd` `docker_compose_language_service` `dockerls` `elmls` `gopls` `html` `cssls` `lua_ls` `matlab_ls` `neocmake` `basedpyright` `rust_analyzer` `sqlls` `taplo` `texlab` `tinymist` `verible` `vtsls` `vue_ls` `jsonls` `yamlls`
+- Formatter / Linter: `bibtex-tidy` `checkmake` `shfmt` `shellcheck` `stylua` `prettierd` `cmakelang` `cmake-lint` `gersemi` `hadolint` `eslint_d` `elm-format` `elm-review` `miss_hit` `nginx-config-formatter` `sql-formatter` `sqlfluff` `stylelint` `taplo` `tex-fmt` `typstyle` `verible` `ruff` `clang-format` `clang-tidy` `gofumpt` `goimports` `golangci-lint`
+
+nginx LSP 使用系统提供的 `nginx-language-server`，不由 Mason 安装。
+Elm lint 使用外部安装的 `elm-review`。
+C/C++ lint 使用系统提供的 `clang-tidy`。
+SQL lint 只会在项目根目录存在 `.sqlfluff` 时启用。
 
 Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 
@@ -172,12 +180,24 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>ph`：切换 HTML 预览
 - `<Space>pi`：粘贴剪贴板图片
 - `<Space>pm`：切换 Markdown 预览
+- `<Space>po`：用外部程序预览当前图片、PDF、音频、视频或 Typst
 - `<Space>rr`：选择并运行项目任务
 - `<Space>rt`：切换任务列表
 - `<Space>rl`：重新运行上一次任务
 - `<Space>ra`：当前任务操作菜单
 - `<Space>la`：Code action
 - `<Space>lf`：格式化当前文件
+- `<Space>vc`：编译 LaTeX
+- `<Space>vv`：查看 PDF
+- `<Space>vs`：停止 LaTeX 编译
+- `<Space>vC`：清理 LaTeX 辅助文件
+- `<Space>ve`：显示 LaTeX 错误
+- `<Space>vt`：切换 LaTeX TOC
+- `<Space>vi`：显示 LaTeX 信息
+- `<Space>yc`：编译 Typst
+- `<Space>yv`：编译并查看 Typst PDF
+- `<Space>yw`：监听 Typst 编译
+- `<Space>ys`：停止 Typst 监听
 - `<Space>co`：冲突块选择 ours
 - `<Space>ct`：冲突块选择 theirs
 - `<Space>cb`：冲突块保留双方
@@ -209,16 +229,19 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - 已启用 `vimtex` 和 `texlab`
 - `LuaSnip + friendly-snippets` 会直接提供 LaTeX snippets
 - 默认使用 `latexmk` 编译，`zathura` 预览 PDF
-- 常用 `vimtex` 操作：
-  - `\ll`：编译
-  - `\lv`：查看 PDF
-  - `\lk`：上一条错误
-  - `\lj`：下一条错误
+- 常用操作放在 `<Space>v` 的 `latex` 组
+
+## Typst
+
+- 已启用 `tinymist` LSP、Treesitter 高亮与 `typstyle` 格式化
+- `<Space>y` 是 `typst` 组
+- `<Space>po` 在 `.typ` 文件里会先编译，再用 `zathura` 打开同名 PDF
+- `image.nvim` 和 `img-clip.nvim` 已支持 Typst 图片
 
 ## Images
 
-- 已启用 `image.nvim`，在 `markdown` 文件里可直接在终端显示图片
-- 已启用 `img-clip.nvim`，可把剪贴板图片嵌入 `markdown` / `tex`
+- 已启用 `image.nvim`，在 `markdown` / `typst` 文件里可直接在终端显示图片
+- 已启用 `img-clip.nvim`，可把剪贴板图片嵌入 `markdown` / `tex` / `typst`
 
 ## Git Conflict
 

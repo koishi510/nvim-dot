@@ -14,25 +14,32 @@ local languages = {
   "latex",
   "lua",
   "matlab",
+  "menhir",
   "markdown",
   "markdown_inline",
   "make",
+  "nginx",
   "powershell",
   "python",
   "query",
   "regex",
   "rust",
+  "sql",
   "systemverilog",
   "bibtex",
   "toml",
   "tsx",
   "typescript",
+  "typst",
   "vue",
   "vim",
   "vimdoc",
   "yaml",
-  "zig",
 }
+
+local filetypes = vim.list_extend(vim.deepcopy(languages), {
+  "verilog",
+})
 
 return {
   {
@@ -64,7 +71,7 @@ return {
       end
 
       vim.api.nvim_create_autocmd("FileType", {
-        pattern = languages,
+        pattern = filetypes,
         callback = function(args)
           pcall(vim.treesitter.start, args.buf)
           vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
