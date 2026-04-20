@@ -30,7 +30,8 @@ do
 
   for _, name in ipairs({ "underline", "virtual_text" }) do
     local handler = vim.diagnostic.handlers[name]
-    if handler and handler.show then
+    if handler and handler.show and not handler._extend_to_word then
+      handler._extend_to_word = true
       local orig_show = handler.show
       handler.show = function(ns, bufnr, diagnostics, opts)
         return orig_show(ns, bufnr, extend_to_word(bufnr, diagnostics), opts)
@@ -49,48 +50,6 @@ vim.filetype.add({
     v = "verilog",
   },
 })
-
-local root_markers = {
-  ".git",
-  "package.json",
-  "tsconfig.json",
-  "jsconfig.json",
-  "pyproject.toml",
-  "setup.py",
-  "setup.cfg",
-  "requirements.txt",
-  "go.mod",
-  "Cargo.toml",
-  "compile_commands.json",
-  "CMakeLists.txt",
-  "CMakePresets.json",
-  "CTestConfig.cmake",
-  "nginx.conf",
-  "cmake",
-  "Containerfile",
-  "Dockerfile",
-  "compose.yaml",
-  "compose.yml",
-  "docker-compose.yaml",
-  "docker-compose.yml",
-  "elm.json",
-  ".sqllsrc.json",
-  ".sqlfluff",
-  ".svlangserver",
-  ".svlint.toml",
-  "verible.filelist",
-  "filelist.f",
-  "files.f",
-  "Makefile",
-  "lua",
-  "matlab.prj",
-  "startup.m",
-  "Contents.m",
-}
-
-local function project_root(path)
-  return require("config.root").root(path, root_markers)
-end
 
 local function apply_dashboard_window(win, buf)
   if not vim.api.nvim_win_is_valid(win) or not vim.api.nvim_buf_is_valid(buf) then
@@ -154,12 +113,24 @@ local function check_external_changes()
   end
 end
 
+local autosave_skip_filetypes = {
+  gitcommit = true,
+  gitrebase = true,
+  gitconfig = true,
+  hgcommit = true,
+  oil = true,
+}
+
 local function autosave_buffer(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
     return
   end
 
   if vim.bo[bufnr].buftype ~= "" or not vim.bo[bufnr].modifiable or vim.bo[bufnr].readonly then
+    return
+  end
+
+  if autosave_skip_filetypes[vim.bo[bufnr].filetype] then
     return
   end
 
@@ -172,11 +143,13 @@ local function autosave_buffer(bufnr)
     return
   end
 
+  vim.b[bufnr].autosave_skip_format = true
   local ok, err = pcall(function()
     vim.api.nvim_buf_call(bufnr, function()
       vim.cmd.write()
     end)
   end)
+  vim.b[bufnr].autosave_skip_format = nil
 
   if not ok then
     vim.notify("Autosave failed: " .. tostring(err), vim.log.levels.WARN)
@@ -218,25 +191,6 @@ autocmd("FileChangedShell", {
     local name = vim.api.nvim_buf_get_name(args.buf)
     local file = name ~= "" and vim.fn.fnamemodify(name, ":.") or "[No Name]"
     vim.notify("External change detected, but buffer has unsaved edits: " .. file, vim.log.levels.WARN)
-  end,
-})
-
-autocmd("BufReadPost", {
-  desc = "Use project root as cwd for project files",
-  callback = function(args)
-    if vim.bo[args.buf].buftype ~= "" then
-      return
-    end
-
-    local path = vim.api.nvim_buf_get_name(args.buf)
-    if path == "" then
-      return
-    end
-
-    local root = project_root(vim.fs.dirname(path))
-    if root and root ~= vim.fn.getcwd() then
-      vim.cmd.tcd(vim.fn.fnameescape(root))
-    end
   end,
 })
 

@@ -72,7 +72,6 @@ return {
       "b0o/SchemaStore.nvim",
     },
     config = function()
-      require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
       local schemastore = require("schemastore")
       local vue_language_server_path = vim.fn.stdpath("data")

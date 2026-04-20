@@ -8,7 +8,7 @@
 - `treesitter` 高亮与缩进
 - `snacks.nvim` dashboard / explorer / picker / terminal / lazygit / notifier / zen / scratch / statuscolumn
 - `mason` + `lspconfig` 语言服务器管理
-- 自动识别项目根目录，避免从非项目根启动时 LSP / formatter 找错工作目录
+- 每个 LSP server 独立从 buffer 路径往上查找 root marker，自动适配 monorepo / 全栈项目的子目录
 - `conform.nvim` 自动格式化
 - `nvim-lint` 代码检查
 - `nvim-cmp` + `LuaSnip` 补全，Copilot ghost text 内联建议
@@ -150,6 +150,7 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 ## 常用快捷键
 
 - `<Space>e`：切换文件树
+- `<Space>c`：把 tab 工作目录切到当前 buffer 的项目根（多项目/全栈切换用）
 - `<Space>ff`：查找文件
 - `<Space>fg`：全文搜索
 - `<Space>fb`：切换缓冲区
@@ -195,7 +196,7 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>S`：scratch 列表
 - `<Space>nn`：通知历史
 - `<Space>nd`：清空通知
-- `<Space>h`：查看键位列表
+- `<Space>h`：HTML 预览相关（见 `<Space>hh`/`<Space>hs`/`<Space>hS`/`<Space>he`）
 - `<Space>p`：Markdown 文件切换 MarkdownPreview，其他文件用外部程序预览图片 / PDF / 音频 / 视频 / HTML
 - `<Space>ii`：插入剪贴板图片
 - `<Space>hh`：切换 HTML live server
@@ -217,7 +218,7 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>ub`：打开 HTTP 请求 scratchpad
 - `<Space>uc`：复制当前请求为 curl
 - `<Space>la`：Code action
-- `<Space>le`：Emmet 包裹缩写（html/css/jsx/tsx/vue）
+- `<Space>he`：Emmet 包裹缩写（html/css/jsx/tsx/vue）
 - `<Space>lf`：格式化当前文件
 - `<Space>lr`：重命名符号
 - `<Space>lq`：当前会话已知诊断写入 quickfix

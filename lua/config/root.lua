@@ -2,6 +2,48 @@ local M = {}
 
 M.start_dir = vim.fs.normalize(vim.fn.getcwd())
 
+M.default_markers = {
+  ".git",
+  "package.json",
+  "tsconfig.json",
+  "jsconfig.json",
+  "pyproject.toml",
+  "setup.py",
+  "setup.cfg",
+  "requirements.txt",
+  "Pipfile",
+  "pyrightconfig.json",
+  "go.mod",
+  "go.work",
+  "Cargo.toml",
+  "rust-project.json",
+  "compile_commands.json",
+  "compile_flags.txt",
+  ".clangd",
+  "CMakeLists.txt",
+  "CMakePresets.json",
+  "CTestConfig.cmake",
+  "nginx.conf",
+  "Containerfile",
+  "Dockerfile",
+  "compose.yaml",
+  "compose.yml",
+  "docker-compose.yaml",
+  "docker-compose.yml",
+  "elm.json",
+  ".sqllsrc.json",
+  ".sqlfluff",
+  ".svlangserver",
+  ".svlint.toml",
+  "verible.filelist",
+  "filelist.f",
+  "files.f",
+  "Makefile",
+  "matlab.prj",
+  "startup.m",
+  "Contents.m",
+}
+
 local function is_relative(path)
   return not path:match("^/")
 end
@@ -73,6 +115,10 @@ function M.buf_dir(bufnr)
   end
 
   return M.start_dir
+end
+
+function M.buf_project_root(bufnr)
+  return M.root(M.buf_dir(bufnr), M.default_markers)
 end
 
 return M

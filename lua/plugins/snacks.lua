@@ -34,12 +34,15 @@ return {
       _G.Snacks = require("snacks")
       _G.Snacks.setup(opts)
 
-      local icon = _G.Snacks.util.icon
-      _G.Snacks.util.icon = function(name, cat, icon_opts)
-        if cat == "file" and type(name) == "string" then
-          name = vim.fs.basename(name)
+      if not _G.Snacks.util._icon_basename_patched then
+        _G.Snacks.util._icon_basename_patched = true
+        local icon = _G.Snacks.util.icon
+        _G.Snacks.util.icon = function(name, cat, icon_opts)
+          if cat == "file" and type(name) == "string" then
+            name = vim.fs.basename(name)
+          end
+          return icon(name, cat, icon_opts)
         end
-        return icon(name, cat, icon_opts)
       end
     end,
     opts = {

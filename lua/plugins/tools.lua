@@ -54,6 +54,10 @@ return {
         },
       },
       format_on_save = function(bufnr)
+        if vim.b[bufnr].autosave_skip_format then
+          return nil
+        end
+
         if require("config.git").has_conflict_markers(bufnr) then
           return nil
         end

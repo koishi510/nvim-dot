@@ -163,6 +163,24 @@ local function grep_to_quickfix()
   end)
 end
 
+local function cd_to_buffer_root()
+  local root = require("config.root")
+  local project = root.buf_project_root()
+  if not project then
+    vim.notify("No project root for current buffer", vim.log.levels.WARN)
+    return
+  end
+
+  local cwd = vim.fs.normalize(vim.fn.getcwd())
+  if vim.fs.normalize(project) == cwd then
+    vim.notify("Already at " .. project, vim.log.levels.INFO)
+    return
+  end
+
+  vim.cmd.tcd(vim.fn.fnameescape(project))
+  vim.notify("tcd " .. project)
+end
+
 local function open_preview()
   if vim.bo.filetype == "markdown" then
     vim.cmd.MarkdownPreviewToggle()
@@ -222,6 +240,7 @@ end
 
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
 map("n", "<leader>q", "<cmd>q<cr>", { desc = "Quit window" })
+map("n", "<leader>c", cd_to_buffer_root, { desc = "Cd to buffer project root" })
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search" })
 map("n", "<leader>gcb", "<cmd>GitConflictChooseBoth<cr>", { desc = "Choose both" })
 map("n", "<leader>gcc", "<cmd>GitConflictChooseOurs<cr>", { desc = "Choose current" })
