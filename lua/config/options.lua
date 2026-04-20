@@ -1,4 +1,5 @@
 local opt = vim.opt
+require("config.root")
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"

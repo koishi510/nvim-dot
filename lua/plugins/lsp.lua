@@ -17,6 +17,7 @@ return {
         "docker_compose_language_service",
         "dockerls",
         "elmls",
+        "emmet_language_server",
         "gopls",
         "html",
         "cssls",
@@ -26,9 +27,9 @@ return {
         "basedpyright",
         "rust_analyzer",
         "sqlls",
+        "tailwindcss",
         "taplo",
         "texlab",
-        "tinymist",
         "verible",
         "vtsls",
         "vue_ls",
@@ -91,37 +92,60 @@ return {
         map("n", "gh", vim.lsp.buf.hover, "Hover docs")
         map("n", "<leader>sd", vim.lsp.buf.document_symbol, "Document symbols")
         map("n", "<leader>sw", vim.lsp.buf.workspace_symbol, "Workspace symbols")
-        map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+        map("n", "<leader>lr", vim.lsp.buf.rename, "Rename symbol")
         map("n", "<leader>la", vim.lsp.buf.code_action, "Code action")
+      end
+
+      local function bounded_root(markers)
+        return function(bufnr, on_dir)
+          local root = require("config.root").root(require("config.root").buf_dir(bufnr), markers)
+          if root then
+            on_dir(root)
+          end
+        end
       end
 
       local servers = {
         bashls = {
-          root_markers = { "Makefile", ".git" },
+          root_markers = { "Makefile" },
         },
         clangd = {
-          root_markers = { "compile_commands.json", "compile_flags.txt", ".clangd", "CMakeLists.txt", ".git" },
+          root_markers = { "compile_commands.json", "compile_flags.txt", ".clangd", "CMakeLists.txt" },
         },
         gopls = {
-          root_markers = { "go.work", "go.mod", ".git" },
+          root_markers = { "go.work", "go.mod" },
         },
         html = {
-          root_markers = { "package.json", ".git" },
+          root_markers = { "package.json" },
         },
         cssls = {
-          root_markers = { "package.json", ".git" },
+          root_markers = { "package.json" },
         },
         docker_compose_language_service = {
-          root_markers = { "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml", ".git" },
+          root_markers = { "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml" },
         },
         dockerls = {
-          root_markers = { "Dockerfile", "Containerfile", ".git" },
+          root_markers = { "Dockerfile", "Containerfile" },
         },
         elmls = {
           root_markers = { "elm.json" },
         },
+        emmet_language_server = {
+          filetypes = {
+            "css",
+            "html",
+            "javascript",
+            "javascriptreact",
+            "less",
+            "pug",
+            "sass",
+            "scss",
+            "typescriptreact",
+            "vue",
+          },
+        },
         lua_ls = {
-          root_markers = { ".luarc.json", ".luarc.jsonc", ".stylua.toml", "stylua.toml", "lua", ".git" },
+          root_markers = { ".luarc.json", ".luarc.jsonc", ".stylua.toml", "stylua.toml", "lua" },
           settings = {
             Lua = {
               diagnostics = {
@@ -134,13 +158,13 @@ return {
           },
         },
         matlab_ls = {
-          root_markers = { "matlab.prj", "startup.m", "Contents.m", ".git" },
+          root_markers = { "matlab.prj", "startup.m", "Contents.m" },
         },
         neocmake = {
-          root_markers = { "CMakePresets.json", "CTestConfig.cmake", "CMakeLists.txt", "cmake", ".git" },
+          root_markers = { "CMakePresets.json", "CTestConfig.cmake", "CMakeLists.txt", "cmake" },
         },
         nginx_language_server = {
-          root_markers = { "nginx.conf", ".git" },
+          root_markers = { "nginx.conf" },
         },
         basedpyright = {
           root_markers = {
@@ -150,7 +174,6 @@ return {
             "requirements.txt",
             "Pipfile",
             "pyrightconfig.json",
-            ".git"
           },
           settings = {
             basedpyright = {
@@ -161,7 +184,7 @@ return {
           },
         },
         jsonls = {
-          root_markers = { "package.json", ".git" },
+          root_markers = { "package.json" },
           settings = {
             json = {
               schemas = schemastore.json.schemas(),
@@ -170,7 +193,7 @@ return {
           },
         },
         rust_analyzer = {
-          root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+          root_markers = { "Cargo.toml", "rust-project.json" },
           settings = {
             ["rust-analyzer"] = {
               check = {
@@ -180,21 +203,42 @@ return {
           },
         },
         sqlls = {
-          root_markers = { ".sqllsrc.json", ".git" },
+          root_markers = { ".sqllsrc.json" },
+        },
+        tailwindcss = {
+          root_markers = {
+            "tailwind.config.js",
+            "tailwind.config.ts",
+            "tailwind.config.cjs",
+            "tailwind.config.mjs",
+            "postcss.config.js",
+            "postcss.config.ts",
+          },
+          filetypes = {
+            "html",
+            "css",
+            "scss",
+            "less",
+            "sass",
+            "javascript",
+            "javascriptreact",
+            "typescript",
+            "typescriptreact",
+            "vue",
+            "svelte",
+          },
         },
         taplo = {
-          root_markers = { "taplo.toml", ".taplo.toml", "Cargo.toml", "pyproject.toml", ".git" },
+          root_markers = { "taplo.toml", ".taplo.toml", "Cargo.toml", "pyproject.toml" },
         },
         texlab = {
-          root_markers = { ".latexmkrc", "latexmkrc", ".git" },
-        },
-        tinymist = {
-          root_markers = { "typst.toml", ".git" },
+          root_markers = { ".latexmkrc", "latexmkrc" },
         },
         verible = {
-          root_markers = { ".svlangserver", ".svlint.toml", "verible.filelist", "filelist.f", "files.f", ".git" },
+          root_markers = { ".svlangserver", ".svlint.toml", "verible.filelist", "filelist.f", "files.f" },
         },
         vtsls = {
+          root_markers = { "package.json", "tsconfig.json", "jsconfig.json" },
           filetypes = {
             "javascript",
             "javascriptreact",
@@ -213,10 +257,10 @@ return {
           },
         },
         vue_ls = {
-          root_markers = { "package.json", "vue.config.js", "vite.config.ts", "vite.config.js", ".git" },
+          root_markers = { "package.json", "vue.config.js", "vite.config.ts", "vite.config.js" },
         },
         yamlls = {
-          root_markers = { ".yamllint", ".yamllint.yaml", ".yamllint.yml", ".git" },
+          root_markers = { ".yamllint", ".yamllint.yaml", ".yamllint.yml" },
           settings = {
             yaml = {
               schemaStore = {
@@ -232,6 +276,10 @@ return {
       for server_name, server in pairs(servers) do
         server.capabilities = capabilities
         server.on_attach = on_attach
+        if server.root_markers then
+          server.root_dir = bounded_root(server.root_markers)
+          server.root_markers = nil
+        end
         vim.lsp.config(server_name, server)
         vim.lsp.enable(server_name)
       end

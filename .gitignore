@@ -25,3 +25,4 @@ lua/config/local.lua
 
 # Agent/local workflow state
 .agent-unsaved
+.nvim/

@@ -46,7 +46,6 @@ vim.filetype.add({
     s = "asm",
     S = "asm",
     mly = "menhir",
-    typ = "typst",
     v = "verilog",
   },
 })
@@ -90,14 +89,7 @@ local root_markers = {
 }
 
 local function project_root(path)
-  local marker = vim.fs.find(root_markers, {
-    path = path,
-    upward = true,
-  })[1]
-
-  if marker then
-    return vim.fs.dirname(marker)
-  end
+  return require("config.root").root(path, root_markers)
 end
 
 local function apply_dashboard_window(win, buf)
@@ -156,12 +148,76 @@ autocmd("VimResized", {
   end,
 })
 
-autocmd({ "FocusGained", "BufEnter" }, {
+local function check_external_changes()
+  if vim.fn.mode() ~= "c" then
+    vim.cmd.checktime()
+  end
+end
+
+local function autosave_buffer(bufnr)
+  if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
+    return
+  end
+
+  if vim.bo[bufnr].buftype ~= "" or not vim.bo[bufnr].modifiable or vim.bo[bufnr].readonly then
+    return
+  end
+
+  if not vim.bo[bufnr].modified then
+    return
+  end
+
+  local name = vim.api.nvim_buf_get_name(bufnr)
+  if name == "" then
+    return
+  end
+
+  local ok, err = pcall(function()
+    vim.api.nvim_buf_call(bufnr, function()
+      vim.cmd.write()
+    end)
+  end)
+
+  if not ok then
+    vim.notify("Autosave failed: " .. tostring(err), vim.log.levels.WARN)
+  end
+end
+
+autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
+  desc = "Save modified file buffers when leaving the editing area",
+  callback = function(args)
+    autosave_buffer(args.buf)
+  end,
+})
+
+autocmd({ "FocusGained", "BufEnter", "CursorHold", "TermLeave", "TermClose" }, {
   desc = "Reload files changed by external tools",
   callback = function()
-    if vim.fn.mode() ~= "c" then
-      vim.cmd.checktime()
+    check_external_changes()
+  end,
+})
+
+autocmd("FileChangedShellPost", {
+  desc = "Report files reloaded after external changes",
+  callback = function(args)
+    local name = vim.api.nvim_buf_get_name(args.buf)
+    local file = name ~= "" and vim.fn.fnamemodify(name, ":.") or "[No Name]"
+    vim.notify("Reloaded external change: " .. file, vim.log.levels.INFO)
+  end,
+})
+
+autocmd("FileChangedShell", {
+  desc = "Warn before external changes collide with unsaved edits",
+  callback = function(args)
+    vim.v.fcs_choice = "ask"
+
+    if not vim.bo[args.buf].modified then
+      return
     end
+
+    local name = vim.api.nvim_buf_get_name(args.buf)
+    local file = name ~= "" and vim.fn.fnamemodify(name, ":.") or "[No Name]"
+    vim.notify("External change detected, but buffer has unsaved edits: " .. file, vim.log.levels.WARN)
   end,
 })
 

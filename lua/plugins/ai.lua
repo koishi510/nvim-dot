@@ -1,4 +1,5 @@
 local function agent_terminal(cmd, count)
+  local path, qf_count = require("config.quickfix").write()
   Snacks.terminal(cmd, {
     count = count,
     win = {
@@ -6,6 +7,10 @@ local function agent_terminal(cmd, count)
       width = 0.3,
     },
   })
+
+  if path then
+    vim.notify(string.format("Quickfix exported to %s (%d item(s))", vim.fn.fnamemodify(path, ":."), qf_count))
+  end
 end
 
 return {

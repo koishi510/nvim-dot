@@ -120,7 +120,7 @@ return {
     "hedyhli/outline.nvim",
     cmd = { "Outline", "OutlineOpen" },
     keys = {
-      { "<leader>o", "<cmd>Outline<cr>", desc = "Toggle outline" },
+      { "<leader>ss", "<cmd>Outline<cr>", desc = "Toggle outline" },
     },
     opts = {
       position = "right",
@@ -160,6 +160,13 @@ return {
     },
   },
   {
+    "andymass/vim-matchup",
+    event = { "BufReadPre", "BufNewFile" },
+    init = function()
+      vim.g.matchup_matchparen_offscreen = { method = "popup" }
+    end,
+  },
+  {
     "HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
     opts = {
@@ -180,18 +187,17 @@ return {
           template = '<img src="$FILE_PATH" alt="$CURSOR">',
         },
         tex = {
-          template = "\\includegraphics[width=0.8\\linewidth]{$FILE_PATH}",
-        },
-        latex = {
-          template = "\\includegraphics[width=0.8\\linewidth]{$FILE_PATH}",
-        },
-        typst = {
-          template = '#image("$FILE_PATH")',
+          template = [[\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{$FILE_PATH}
+  \caption{$CURSOR}
+  \label{fig:$FILE_NAME_NO_EXT}
+\end{figure}]],
         },
       },
     },
     keys = {
-      { "<leader>pi", "<cmd>PasteImage<cr>", desc = "Paste image" },
+      { "<leader>ii", "<cmd>PasteImage<cr>", desc = "Insert image" },
     },
   },
 }

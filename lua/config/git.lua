@@ -1,6 +1,23 @@
 local M = {}
 
-local conflict_pattern = [[^\(<\{7}\|=\{7}\|>\{7}\)]]
+local conflict_pattern = [[^\(<\{7}\||\{7}\|=\{7}\|>\{7}\)]]
+
+function M.has_conflict_markers(bufnr)
+  bufnr = bufnr or 0
+  if not vim.api.nvim_buf_is_loaded(bufnr) then
+    return false
+  end
+
+  local line_count = vim.api.nvim_buf_line_count(bufnr)
+  for lnum = 1, line_count do
+    local line = vim.api.nvim_buf_get_lines(bufnr, lnum - 1, lnum, false)[1] or ""
+    if line:match("^<<<<<<<") or line:match("^|||||||") or line:match("^=======") or line:match("^>>>>>>>") then
+      return true
+    end
+  end
+
+  return false
+end
 
 local function system_list(cmd)
   local result = vim.system(cmd, { text = true }):wait()

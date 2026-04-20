@@ -214,7 +214,7 @@ return {
         desc = "Recent files",
       },
       {
-        "<leader>h",
+        "<leader>/",
         function()
           Snacks.picker.keymaps()
         end,
@@ -286,7 +286,7 @@ return {
         desc = "Scratch list",
       },
       {
-        "<leader>nh",
+        "<leader>nn",
         function()
           Snacks.notifier.show_history()
         end,

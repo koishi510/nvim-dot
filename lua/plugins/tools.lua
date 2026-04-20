@@ -24,7 +24,6 @@ return {
         "stylelint",
         "taplo",
         "tex-fmt",
-        "typstyle",
         "verible",
         "ruff",
         "clang-format",
@@ -47,7 +46,7 @@ return {
         clang_format = {
           inherit = true,
           prepend_args = function(self, ctx)
-            if vim.fs.find({ ".clang-format" }, { upward = true, path = ctx.dirname })[1] then
+            if require("config.root").find(".clang-format", { path = ctx.dirname }) then
               return {}
             end
             return { "-style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}" }
@@ -55,6 +54,10 @@ return {
         },
       },
       format_on_save = function(bufnr)
+        if require("config.git").has_conflict_markers(bufnr) then
+          return nil
+        end
+
         local disable_filetypes = {
           c = true,
           cpp = true,
@@ -100,7 +103,6 @@ return {
         vue = { "prettierd", "prettier", stop_after_first = true },
         systemverilog = { "verible" },
         toml = { "taplo" },
-        typst = { "typstyle" },
         yaml = { "prettierd", "prettier", stop_after_first = true },
         zsh = { "shfmt" },
       },
@@ -166,28 +168,26 @@ return {
 
       local function has_config(markers)
         return function(bufnr)
-          local path = vim.api.nvim_buf_get_name(bufnr)
-          local dir = path ~= "" and vim.fs.dirname(path) or vim.fn.getcwd()
-          if vim.fs.find(markers, { upward = true, path = dir })[1] then
-            return {}
+          local root = require("config.root")
+          local dir = root.buf_dir(bufnr)
+          local project_root = root.root(dir, markers)
+          if project_root then
+            return { cwd = project_root }
           end
         end
       end
 
       local function root_cwd(markers, extra_cmd)
         return function(bufnr)
-          local file = vim.api.nvim_buf_get_name(bufnr)
-          if file == "" then
-            return
-          end
-          local root = vim.fs.root(file, markers)
-          if not root then
+          local root = require("config.root")
+          local project_root = root.root(root.buf_dir(bufnr), markers)
+          if not project_root then
             return
           end
           if extra_cmd and vim.fn.executable(extra_cmd) ~= 1 then
             return
           end
-          return { cwd = root }
+          return { cwd = project_root }
         end
       end
 

@@ -11,6 +11,8 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-nvim-lsp",
       "onsails/lspkind-nvim",
+      "jmbuhr/cmp-pandoc-references",
+      "kristijanhusak/vim-dadbod-completion",
       "rafamadriz/friendly-snippets",
       "windwp/nvim-autopairs",
     },
@@ -69,7 +71,9 @@ return {
               dictionary = "[Dict]",
               luasnip = "[Snip]",
               nvim_lsp = "[LSP]",
+              pandoc_references = "[Ref]",
               path = "[Path]",
+              ["vim-dadbod-completion"] = "[DB]",
             },
           }),
         },
@@ -122,6 +126,26 @@ return {
           end, { "i", "s" }),
         }),
         sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "luasnip" },
+          { name = "path" },
+          { name = "buffer" },
+          { name = "dictionary", keyword_length = 3 },
+        }),
+      })
+
+      cmp.setup.filetype({ "sql", "mysql", "plsql" }, {
+        sources = cmp.config.sources({
+          { name = "vim-dadbod-completion" },
+          { name = "nvim_lsp" },
+          { name = "path" },
+          { name = "buffer" },
+        }),
+      })
+
+      cmp.setup.filetype({ "markdown", "tex", "plaintex", "quarto" }, {
+        sources = cmp.config.sources({
+          { name = "pandoc_references" },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "path" },

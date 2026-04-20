@@ -1,6 +1,6 @@
 local map = vim.keymap.set
 local git = require("config.git")
-local typst = require("config.typst")
+local quickfix = require("config.quickfix")
 
 local function delete_buffer()
   Snacks.bufdelete.delete()
@@ -11,6 +11,11 @@ local function delete_other_buffers()
 end
 
 local function format_buffer()
+  if git.has_conflict_markers(0) then
+    vim.notify("Skip formatting: Git conflict markers found", vim.log.levels.WARN)
+    return
+  end
+
   local ok, conform = pcall(require, "conform")
 
   if ok then
@@ -77,7 +82,93 @@ local function toggle_quickfix()
   vim.cmd.copen()
 end
 
+local function diagnostics_to_quickfix(bufnr, title)
+  local diagnostics = vim.diagnostic.get(bufnr)
+
+  table.sort(diagnostics, function(a, b)
+    local file_a = vim.api.nvim_buf_get_name(a.bufnr or 0)
+    local file_b = vim.api.nvim_buf_get_name(b.bufnr or 0)
+    if file_a == file_b then
+      if a.lnum == b.lnum then
+        return a.col < b.col
+      end
+      return a.lnum < b.lnum
+    end
+    return file_a < file_b
+  end)
+
+  vim.fn.setqflist({}, " ", {
+    title = title,
+    items = vim.diagnostic.toqflist(diagnostics),
+  })
+
+  if vim.tbl_isempty(diagnostics) then
+    vim.notify(title .. " is empty", vim.log.levels.INFO)
+    return
+  end
+
+  vim.cmd.copen()
+end
+
+local function workspace_diagnostics_to_quickfix()
+  diagnostics_to_quickfix(nil, "Workspace diagnostics")
+end
+
+local function grep_to_quickfix()
+  if vim.fn.executable("rg") ~= 1 then
+    vim.notify("rg is not installed", vim.log.levels.ERROR)
+    return
+  end
+
+  vim.ui.input({ prompt = "rg quickfix: " }, function(query)
+    if not query or query == "" then
+      return
+    end
+
+    local cwd = require("config.root").start_dir
+    vim.system({
+      "rg",
+      "--vimgrep",
+      "--smart-case",
+      "--hidden",
+      "--glob",
+      "!.git",
+      query,
+    }, { cwd = cwd, text = true }, function(result)
+      vim.schedule(function()
+        if result.code and result.code > 1 then
+          vim.notify((result.stderr or ""):gsub("%s+$", ""), vim.log.levels.ERROR)
+          return
+        end
+
+        local lines = vim.split(result.stdout or "", "\n", { trimempty = true })
+        local items = vim.fn.getqflist({
+          lines = lines,
+          efm = "%f:%l:%c:%m",
+        }).items
+
+        vim.fn.setqflist({}, " ", {
+          title = "rg: " .. query,
+          items = items,
+        })
+
+        if vim.tbl_isempty(items) then
+          vim.notify("No rg matches: " .. query, vim.log.levels.INFO)
+          return
+        end
+
+        vim.cmd.copen()
+      end)
+    end)
+  end)
+end
+
 local function open_preview()
+  if vim.bo.filetype == "markdown" then
+    vim.cmd.MarkdownPreviewToggle()
+    return
+  end
+
   local file = vim.api.nvim_buf_get_name(0)
 
   if file == "" then
@@ -86,11 +177,6 @@ local function open_preview()
   end
 
   local ext = vim.fn.fnamemodify(file, ":e"):lower()
-
-  if ext == "typ" then
-    typst.view()
-    return
-  end
 
   local viewers = {
     png = "imv",
@@ -116,6 +202,8 @@ local function open_preview()
     opus = "mpv",
     m4a = "mpv",
     aac = "mpv",
+    html = "xdg-open",
+    htm = "xdg-open",
   }
   local viewer = viewers[ext]
 
@@ -129,29 +217,36 @@ local function open_preview()
     return
   end
 
-  vim.system({ viewer, file }, { detach = true })
+  vim.system({ viewer, file }, { detach = true }, function() end)
 end
 
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
 map("n", "<leader>q", "<cmd>q<cr>", { desc = "Quit window" })
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search" })
-map("n", "<leader>cb", "<cmd>GitConflictChooseBoth<cr>", { desc = "Choose both" })
-map("n", "<leader>cn", "<cmd>GitConflictChooseNone<cr>", { desc = "Choose none" })
-map("n", "<leader>co", "<cmd>GitConflictChooseOurs<cr>", { desc = "Choose ours" })
-map("n", "<leader>ct", "<cmd>GitConflictChooseTheirs<cr>", { desc = "Choose theirs" })
+map("n", "<leader>gcb", "<cmd>GitConflictChooseBoth<cr>", { desc = "Choose both" })
+map("n", "<leader>gcc", "<cmd>GitConflictChooseOurs<cr>", { desc = "Choose current" })
+map("n", "<leader>gci", "<cmd>GitConflictChooseTheirs<cr>", { desc = "Choose incoming" })
+map("n", "<leader>gcn", "<cmd>GitConflictChooseNone<cr>", { desc = "Choose none" })
 map("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Open Diffview" })
-map("n", "<leader>gf", git.set_conflict_qflist, { desc = "Conflict files" })
 map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File history" })
 map("n", "<leader>gm", "<cmd>DiffviewOpen<cr>", { desc = "Merge view" })
-map("n", "<leader>pm", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Preview Markdown" })
-map("n", "<leader>po", open_preview, { desc = "Open preview" })
-map("n", "<leader>yc", typst.compile, { desc = "Compile Typst" })
-map("n", "<leader>yv", typst.view, { desc = "View Typst PDF" })
-map("n", "<leader>yw", typst.watch, { desc = "Watch Typst" })
-map("n", "<leader>ys", typst.stop, { desc = "Stop Typst" })
+map("n", "<leader>gq", git.set_conflict_qflist, { desc = "Find conflicts" })
+map("n", "<leader>fG", grep_to_quickfix, { desc = "Grep quickfix" })
+map("n", "<leader>p", open_preview, { desc = "Open preview" })
+map("n", "<leader>vc", "<cmd>VimtexCompile<cr>", { desc = "Compile LaTeX" })
+map("n", "<leader>vv", "<cmd>VimtexView<cr>", { desc = "View PDF" })
+map("n", "<leader>vs", "<cmd>VimtexStop<cr>", { desc = "Stop LaTeX" })
+map("n", "<leader>vC", "<cmd>VimtexClean<cr>", { desc = "Clean LaTeX" })
+map("n", "<leader>ve", "<cmd>VimtexErrors<cr>", { desc = "Show LaTeX errors" })
+map("n", "<leader>vt", "<cmd>VimtexTocToggle<cr>", { desc = "Toggle LaTeX TOC" })
+map("n", "<leader>vi", "<cmd>VimtexInfo<cr>", { desc = "Show LaTeX info" })
 map("n", "<leader>ly", copy_line_diagnostics, { desc = "Copy line diagnostics" })
 map("n", "<leader>lY", copy_buffer_diagnostics, { desc = "Copy buffer diagnostics" })
+map("n", "<leader>lq", workspace_diagnostics_to_quickfix, { desc = "Diagnostics quickfix" })
+map("n", "<leader>ay", quickfix.copy_agent_prompt, { desc = "Copy agent quickfix prompt" })
 map("n", "<leader>xQ", toggle_quickfix, { desc = "Quickfix window" })
+map("n", "<leader>xw", quickfix.write_with_notify, { desc = "Write quickfix" })
+map("n", "<leader>xy", quickfix.copy, { desc = "Copy quickfix" })
 
 map("n", "<C-h>", "<C-w>h", { desc = "Window left" })
 map("n", "<C-j>", "<C-w>j", { desc = "Window down" })

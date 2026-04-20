@@ -7,6 +7,9 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     opts = {
+      ignore = function(bufnr)
+        return require("config.git").has_conflict_markers(bufnr)
+      end,
       completions = {
         lsp = {
           enabled = true,
@@ -14,6 +17,19 @@ return {
       },
       render_modes = true,
     },
+    config = function(_, opts)
+      require("render-markdown").setup(opts)
+
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "TextChanged", "TextChangedI" }, {
+        group = vim.api.nvim_create_augroup("markdown-conflict-render", { clear = true }),
+        pattern = { "*.md", "*.markdown" },
+        callback = function(args)
+          if require("config.git").has_conflict_markers(args.buf) then
+            pcall(require("render-markdown.core.manager").set_buf, args.buf, false)
+          end
+        end,
+      })
+    end,
   },
   {
     "iamcco/markdown-preview.nvim",
