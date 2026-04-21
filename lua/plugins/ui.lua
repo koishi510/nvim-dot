@@ -67,6 +67,7 @@ return {
         { "<leader>l", group = "lint" },
         { "<leader>m", group = "markdown" },
         { "<leader>n", group = "notify" },
+        { "<leader>P", group = "package" },
         { "<leader>r", group = "run" },
         { "<leader>s", group = "symbol" },
         { "<leader>t", group = "terminal" },

@@ -8,9 +8,30 @@ return {
       "LiveServerToggle",
     },
     keys = {
-      { "<leader>hh", "<cmd>LiveServerToggle<cr>", desc = "Toggle HTML preview" },
-      { "<leader>hs", "<cmd>LiveServerStart<cr>", desc = "Start HTML preview" },
-      { "<leader>hS", "<cmd>LiveServerStop<cr>", desc = "Stop HTML preview" },
+      {
+        "<leader>hh",
+        function()
+          local root = require("config.root")
+          require("live-server").toggle(root.buf_project_root() or root.start_dir)
+        end,
+        desc = "Toggle HTML preview",
+      },
+      {
+        "<leader>hs",
+        function()
+          local root = require("config.root")
+          require("live-server").start(root.buf_project_root() or root.start_dir)
+        end,
+        desc = "Start HTML preview",
+      },
+      {
+        "<leader>hS",
+        function()
+          local root = require("config.root")
+          require("live-server").stop(root.buf_project_root() or root.start_dir)
+        end,
+        desc = "Stop HTML preview",
+      },
     },
   },
   {
@@ -38,6 +59,38 @@ return {
     opts = {
       autostart = true,
       hide_up_to_date = false,
+    },
+    keys = {
+      {
+        "<leader>Pu",
+        function() require("package-info").update() end,
+        desc = "Update package",
+        ft = "json",
+      },
+      {
+        "<leader>Pc",
+        function() require("package-info").change_version() end,
+        desc = "Change version",
+        ft = "json",
+      },
+      {
+        "<leader>Pd",
+        function() require("package-info").delete() end,
+        desc = "Delete package",
+        ft = "json",
+      },
+      {
+        "<leader>Pi",
+        function() require("package-info").install() end,
+        desc = "Install package",
+        ft = "json",
+      },
+      {
+        "<leader>Pt",
+        function() require("package-info").toggle() end,
+        desc = "Toggle package info",
+        ft = "json",
+      },
     },
   },
   {

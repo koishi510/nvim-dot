@@ -122,6 +122,10 @@ local autosave_skip_filetypes = {
 }
 
 local function autosave_buffer(bufnr)
+  if vim.g.autosave_disabled then
+    return
+  end
+
   if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
     return
   end
@@ -162,6 +166,11 @@ autocmd({ "BufLeave", "WinLeave", "FocusLost" }, {
     autosave_buffer(args.buf)
   end,
 })
+
+vim.api.nvim_create_user_command("AutosaveToggle", function()
+  vim.g.autosave_disabled = not vim.g.autosave_disabled
+  vim.notify("Autosave " .. (vim.g.autosave_disabled and "disabled" or "enabled"))
+end, { desc = "Toggle autosave on/off" })
 
 autocmd({ "FocusGained", "BufEnter", "CursorHold", "TermLeave", "TermClose" }, {
   desc = "Reload files changed by external tools",

@@ -1,12 +1,18 @@
 local root = require("config.root")
 
 local function overseer_search_params()
-  local dir = root.buf_dir(0)
+  local dir = root.buf_project_root(0) or root.buf_dir(0)
 
   return {
     dir = dir,
     filetype = vim.bo.filetype,
   }
+end
+
+local function ensure_cwd(task_defn, cwd)
+  if not task_defn.cwd and cwd then
+    task_defn.cwd = cwd
+  end
 end
 
 local function find_makefile(dir)
@@ -78,7 +84,7 @@ local function add_quickfix_component(task_defn, util)
   table.insert(task_defn.components, 1, quickfix_component())
 end
 
-local function make_task(makefile, target, opts)
+local function make_task(makefile, target)
   local overseer = require("overseer")
   local name = target and ("make " .. target) or "make"
   local cmd = target and { "make", target } or { "make" }
@@ -88,10 +94,7 @@ local function make_task(makefile, target, opts)
     cwd = vim.fs.dirname(makefile),
   }
 
-  if opts and opts.quickfix then
-    add_quickfix_component(task_defn)
-  end
-
+  add_quickfix_component(task_defn)
   wrap_task_command(task_defn)
 
   local task = overseer.new_task(task_defn)
@@ -111,11 +114,23 @@ local function make_targets(makefile)
 
   for _, line in ipairs(lines) do
     local name, desc = line:match("^([%w%._%-%/]+)%s*:[^#]*##%s*(.+)$")
-    if name and not seen[name] then
+
+    if not name then
+      local candidate = line:match("^([%w%._%-%/]+)%s*:")
+      if candidate then
+        local after = line:match("^[%w%._%-%/]+%s*:%s*(.-)$") or ""
+        if after:sub(1, 1) ~= "=" then
+          name = candidate
+          desc = ""
+        end
+      end
+    end
+
+    if name and not seen[name] and not name:match("^%.") and not name:find("%%") then
       seen[name] = true
       table.insert(targets, {
         name = name,
-        desc = desc,
+        desc = desc or "",
       })
     end
   end
@@ -123,11 +138,11 @@ local function make_targets(makefile)
   return targets
 end
 
-local function run_make(makefile, opts)
+local function run_make(makefile)
   local targets = make_targets(makefile)
 
   if vim.tbl_isempty(targets) then
-    make_task(makefile, nil, opts)
+    make_task(makefile, nil)
     return
   end
 
@@ -135,7 +150,10 @@ local function run_make(makefile, opts)
     prompt = "Make target:",
     kind = "make_target",
     format_item = function(target)
-      return string.format("%-20s %s", target.name, target.desc)
+      if target.desc and target.desc ~= "" then
+        return string.format("%-20s %s", target.name, target.desc)
+      end
+      return target.name
     end,
     snacks = {
       focus = "list",
@@ -149,19 +167,18 @@ local function run_make(makefile, opts)
     },
   }, function(target)
     if target then
-      make_task(makefile, target.name, opts)
+      make_task(makefile, target.name)
     end
   end)
 end
 
-local function run_task(opts)
-  opts = opts or {}
+local function run_task()
   local template = require("overseer.template")
   local search_params = overseer_search_params()
   local makefile = find_makefile(search_params.dir)
 
   if makefile then
-    run_make(makefile, opts)
+    run_make(makefile)
     return
   end
 
@@ -177,17 +194,16 @@ local function run_task(opts)
 
     require("overseer").run_task({
       search_params = search_params,
-      on_build = opts.quickfix and add_quickfix_component or nil,
+      on_build = function(task_defn, util)
+        ensure_cwd(task_defn, search_params.dir)
+        add_quickfix_component(task_defn, util)
+      end,
     }, function(task)
       if task then
         require("overseer").open({ enter = false })
       end
     end)
   end)
-end
-
-local function run_task_quickfix()
-  run_task({ quickfix = true })
 end
 
 local function restart_last_task()
@@ -242,7 +258,6 @@ return {
     end,
     keys = {
       { "<leader>rr", run_task, desc = "Run task" },
-      { "<leader>rq", run_task_quickfix, desc = "Run task quickfix" },
       { "<leader>rt", "<cmd>OverseerToggle<cr>", desc = "Toggle tasks" },
       { "<leader>rl", restart_last_task, desc = "Restart task" },
       { "<leader>ra", "<cmd>OverseerTaskAction<cr>", desc = "Task actions" },

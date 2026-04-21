@@ -9,6 +9,7 @@
 - `snacks.nvim` dashboard / explorer / picker / terminal / lazygit / notifier / zen / scratch / statuscolumn
 - `mason` + `lspconfig` 语言服务器管理
 - 每个 LSP server 独立从 buffer 路径往上查找 root marker，自动适配 monorepo / 全栈项目的子目录
+- 终端、lazygit、agent 启动时自动使用当前 buffer 的项目根作为 cwd，Neovim 自身的工作目录不变
 - `conform.nvim` 自动格式化
 - `nvim-lint` 代码检查
 - `nvim-cmp` + `LuaSnip` 补全，Copilot ghost text 内联建议
@@ -40,6 +41,7 @@
 - HTML 浏览器实时预览
 - `nvim-emmet` Emmet 包裹与 LSP 内联展开
 - `package-info.nvim` 在 package.json 内联显示 npm 版本
+- `crates.nvim` 在 Cargo.toml 内联显示 crate 版本
 - `nvim-highlight-colors` 内联高亮颜色码（含 Tailwind）
 - Tailwind CSS / React 语言服务
 - Markdown 渲染与浏览器预览
@@ -150,7 +152,6 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 ## 常用快捷键
 
 - `<Space>e`：切换文件树
-- `<Space>c`：把 tab 工作目录切到当前 buffer 的项目根（多项目/全栈切换用）
 - `<Space>ff`：查找文件
 - `<Space>fg`：全文搜索
 - `<Space>fb`：切换缓冲区
@@ -203,12 +204,18 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>hs`：启动 HTML live server
 - `<Space>hS`：关闭 HTML live server
 - `<Space>he`：Emmet 包裹缩写（html/css/jsx/tsx/vue）
+- `<Space>Pu`：升级包到最新版（package.json 的 npm / Cargo.toml 的 crate）
+- `<Space>Pc`：选择版本
+- `<Space>Pt`：开关版本显示
+- `<Space>Pd`：删除包（仅 npm）
+- `<Space>Pi`：安装新包（仅 npm）
+- `<Space>Pf`：crate features 面板（仅 Rust）
+- `<Space>Po`：打开 crates.io 页面（仅 Rust）
 - `<Space>ic`：补全文献引用
 - `<Space>ss`：切换符号大纲
-- `<Space>rr`：选择并运行项目任务
+- `<Space>rr`：选择并运行项目任务，输出写入 quickfix
 - `<Space>rt`：切换任务列表
 - `<Space>rl`：重新运行上一次任务
-- `<Space>rq`：选择并运行项目任务，输出写入 quickfix
 - `<Space>ra`：当前任务操作菜单
 - `<Space>us`：发送当前 HTTP 请求
 - `<Space>ua`：发送当前 buffer 的所有 HTTP 请求

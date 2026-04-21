@@ -226,7 +226,9 @@ return {
       {
         "<leader>gg",
         function()
-          Snacks.lazygit()
+          local root = require("config.root")
+          local cwd = root.buf_git_root() or root.start_dir
+          Snacks.lazygit({ cwd = cwd })
         end,
         desc = "Open lazygit",
       },
@@ -241,15 +243,24 @@ return {
       {
         "<leader>tt",
         function()
-          Snacks.terminal(nil, { count = 1, win = { position = "float" } })
+          local root = require("config.root")
+          local cwd = root.buf_project_root() or root.start_dir
+          Snacks.terminal(nil, {
+            count = root.session_count("term_float|" .. cwd),
+            cwd = cwd,
+            win = { position = "float" },
+          })
         end,
         desc = "Floating terminal",
       },
       {
         "<leader>th",
         function()
+          local root = require("config.root")
+          local cwd = root.buf_project_root() or root.start_dir
           Snacks.terminal(nil, {
-            count = 2,
+            count = root.session_count("term_bottom|" .. cwd),
+            cwd = cwd,
             win = {
               position = "bottom",
               relative = "win",
@@ -263,7 +274,13 @@ return {
       {
         "<leader>tv",
         function()
-          Snacks.terminal(nil, { count = 3, win = { position = "right", width = 0.3 } })
+          local root = require("config.root")
+          local cwd = root.buf_project_root() or root.start_dir
+          Snacks.terminal(nil, {
+            count = root.session_count("term_right|" .. cwd),
+            cwd = cwd,
+            win = { position = "right", width = 0.3 },
+          })
         end,
         desc = "Vertical terminal",
       },
