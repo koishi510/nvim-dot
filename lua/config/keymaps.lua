@@ -238,6 +238,7 @@ map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File history"
 map("n", "<leader>gm", "<cmd>DiffviewOpen<cr>", { desc = "Merge view" })
 map("n", "<leader>gq", git.set_conflict_qflist, { desc = "Find conflicts" })
 map("n", "<leader>fG", grep_to_quickfix, { desc = "Grep quickfix" })
+map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy UI" })
 map("n", "<leader>v", open_preview, { desc = "Open preview" })
 map("n", "<leader>mc", "<cmd>VimtexCompile<cr>", { desc = "Compile LaTeX" })
 map("n", "<leader>mv", "<cmd>VimtexView<cr>", { desc = "View PDF" })
