@@ -1,6 +1,7 @@
 return {
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
+    event = "VeryLazy",
     dependencies = {
       "williamboman/mason.nvim",
     },
@@ -30,6 +31,11 @@ return {
         "gofumpt",
         "goimports",
         "golangci-lint",
+        "gomodifytags",
+        "gotests",
+        "iferr",
+        "impl",
+        "fourmolu",
       },
       auto_update = false,
       run_on_start = true,
@@ -54,6 +60,10 @@ return {
         },
       },
       format_on_save = function(bufnr)
+        if vim.b[bufnr].bigfile then
+          return nil
+        end
+
         if vim.b[bufnr].autosave_skip_format then
           return nil
         end
@@ -83,6 +93,7 @@ return {
         css = { "prettierd", "prettier", stop_after_first = true },
         elm = { "elm_format" },
         go = { "goimports", "gofumpt" },
+        haskell = { "fourmolu" },
         html = { "prettierd", "prettier", stop_after_first = true },
         javascript = { "prettierd", "prettier", stop_after_first = true },
         javascriptreact = { "prettierd", "prettier", stop_after_first = true },
@@ -255,6 +266,10 @@ return {
           return
         end
 
+        if vim.b[bufnr].bigfile then
+          return
+        end
+
         local ft = vim.bo[bufnr].filetype
         local spec = lint_specs[ft]
         if not spec then
@@ -288,7 +303,7 @@ return {
         end,
       })
 
-      vim.keymap.set("n", "<leader>ll", function()
+      vim.keymap.set("n", "<leader>cl", function()
         try_lint()
       end, { desc = "Lint buffer" })
     end,

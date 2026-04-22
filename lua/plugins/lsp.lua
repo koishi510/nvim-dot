@@ -19,6 +19,7 @@ return {
         "elmls",
         "emmet_language_server",
         "gopls",
+        "hls",
         "html",
         "cssls",
         "lua_ls",
@@ -54,12 +55,6 @@ return {
         width = 0.33,
       },
     },
-    keys = {
-      { "<leader>jd", "<cmd>Glance definitions<cr>", desc = "Show definitions" },
-      { "<leader>jr", "<cmd>Glance references<cr>", desc = "Show references" },
-      { "<leader>ji", "<cmd>Glance implementations<cr>", desc = "Show implementations" },
-      { "<leader>jy", "<cmd>Glance type_definitions<cr>", desc = "Show type definitions" },
-    },
   },
   {
     "b0o/SchemaStore.nvim",
@@ -67,6 +62,7 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "b0o/SchemaStore.nvim",
@@ -84,15 +80,19 @@ return {
       }
 
       local on_attach = function(_, bufnr)
+        if vim.b[bufnr].bigfile then
+          return
+        end
+
         local map = function(mode, lhs, rhs, desc)
           vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
         end
 
-        map("n", "gh", vim.lsp.buf.hover, "Hover docs")
-        map("n", "<leader>sd", vim.lsp.buf.document_symbol, "Document symbols")
-        map("n", "<leader>sw", vim.lsp.buf.workspace_symbol, "Workspace symbols")
-        map("n", "<leader>lr", vim.lsp.buf.rename, "Rename symbol")
-        map("n", "<leader>la", vim.lsp.buf.code_action, "Code action")
+        map("n", "K", "<cmd>Lspsaga hover_doc<cr>", "Hover docs")
+        map("n", "<leader>cs", "<cmd>FzfLua lsp_document_symbols<cr>", "Document symbols")
+        map("n", "<leader>cS", "<cmd>FzfLua lsp_workspace_symbols<cr>", "Workspace symbols")
+        map("n", "<leader>cr", "<cmd>Lspsaga rename<cr>", "Rename symbol")
+        map({ "n", "v" }, "<leader>ca", "<cmd>Lspsaga code_action<cr>", "Code action")
       end
 
       local function bounded_root(markers)
@@ -116,6 +116,9 @@ return {
         },
         html = {
           root_markers = { "package.json" },
+        },
+        hls = {
+          root_markers = { "hie.yaml", "stack.yaml", "cabal.project", "*.cabal", "package.yaml" },
         },
         cssls = {
           root_markers = { "package.json" },
@@ -188,16 +191,6 @@ return {
             json = {
               schemas = schemastore.json.schemas(),
               validate = { enable = true },
-            },
-          },
-        },
-        rust_analyzer = {
-          root_markers = { "Cargo.toml", "rust-project.json" },
-          settings = {
-            ["rust-analyzer"] = {
-              check = {
-                command = "clippy",
-              },
             },
           },
         },
@@ -296,10 +289,7 @@ return {
         },
         underline = true,
         update_in_insert = false,
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-        },
+        virtual_text = false,
       })
     end,
   },

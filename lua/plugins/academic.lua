@@ -4,7 +4,7 @@ return {
     ft = { "markdown", "tex", "plaintex", "quarto" },
     keys = {
       {
-        "<leader>ic",
+        "<leader>mb",
         function()
           require("cmp").complete({
             config = {

@@ -1,15 +1,6 @@
 local function agent_terminal(cmd)
-  local root = require("config.root")
-  local cwd = root.buf_project_root() or root.start_dir
   local path, qf_count = require("config.quickfix").write()
-  Snacks.terminal(cmd, {
-    count = root.session_count("agent_" .. cmd .. "|" .. cwd),
-    cwd = cwd,
-    win = {
-      position = "right",
-      width = 0.3,
-    },
-  })
+  require("config.terminal").agent(cmd)
 
   if path then
     vim.notify(string.format("Quickfix exported to %s (%d item(s))", vim.fn.fnamemodify(path, ":."), qf_count))
@@ -17,6 +8,55 @@ local function agent_terminal(cmd)
 end
 
 return {
+  {
+    "olimorris/codecompanion.nvim",
+    cmd = {
+      "CodeCompanion",
+      "CodeCompanionActions",
+      "CodeCompanionChat",
+      "CodeCompanionCmd",
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "ravitemer/codecompanion-history.nvim",
+    },
+    opts = {
+      display = {
+        chat = {
+          window = {
+            layout = "vertical",
+            position = "right",
+            width = require("config.layout").right_width(),
+            border = "rounded",
+          },
+        },
+        diff = {
+          enabled = true,
+          provider = "inline",
+        },
+      },
+      extensions = {
+        history = {
+          enabled = true,
+          opts = {
+            picker = "fzf-lua",
+            auto_save = true,
+            auto_generate_title = true,
+            continue_last_chat = false,
+          },
+        },
+      },
+    },
+    config = function(_, opts)
+      require("codecompanion").setup(opts)
+    end,
+    keys = {
+      { "<leader>at", "<cmd>CodeCompanionChat Toggle<cr>", desc = "Toggle chat" },
+      { "<leader>aa", "<cmd>CodeCompanionActions<cr>", desc = "Code actions", mode = { "n", "v" } },
+      { "<leader>aA", "<cmd>CodeCompanionChat Add<cr>", desc = "Add to chat", mode = "v" },
+    },
+  },
   {
     "folke/snacks.nvim",
     keys = {

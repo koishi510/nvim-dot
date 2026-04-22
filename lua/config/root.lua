@@ -125,15 +125,4 @@ function M.buf_git_root(bufnr)
   return M.root(M.buf_dir(bufnr), { ".git" })
 end
 
-local session_counts = {}
-local next_session_count = 100
-
-function M.session_count(key)
-  if not session_counts[key] then
-    session_counts[key] = next_session_count
-    next_session_count = next_session_count + 1
-  end
-  return session_counts[key]
-end
-
 return M

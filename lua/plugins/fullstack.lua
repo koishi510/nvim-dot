@@ -17,11 +17,13 @@ return {
     init = function()
       vim.g.db_ui_use_nerd_fonts = 1
       vim.g.db_ui_save_location = vim.fn.stdpath("data") .. "/dadbod-ui"
+      vim.g.db_ui_win_position = "left"
+      vim.g.db_ui_winwidth = require("config.layout").left_width()
     end,
     keys = {
-      { "<leader>dd", "<cmd>DBUIToggle<cr>", desc = "Toggle database UI" },
-      { "<leader>da", "<cmd>DBUIAddConnection<cr>", desc = "Add database connection" },
-      { "<leader>df", "<cmd>DBUIFindBuffer<cr>", desc = "Find database buffer" },
+      { "<leader>Dd", "<cmd>DBUIToggle<cr>", desc = "Toggle database UI" },
+      { "<leader>Da", "<cmd>DBUIAddConnection<cr>", desc = "Add database connection" },
+      { "<leader>Df", "<cmd>DBUIFindBuffer<cr>", desc = "Find database buffer" },
     },
   },
   {
@@ -38,18 +40,29 @@ return {
     opts = {
       global_keymaps = false,
       kulala_keymaps = true,
+      ui = {
+        display_mode = "split",
+        split_direction = "vertical",
+        win_opts = {
+          width = require("config.layout").right_width(),
+          wo = {
+            winfixwidth = true,
+          },
+        },
+      },
     },
     keys = {
       {
-        "<leader>us",
+        "<leader>lHs",
         function()
           require("kulala").run()
         end,
         desc = "Send request",
         mode = { "n", "v" },
+        ft = { "http", "rest" },
       },
       {
-        "<leader>ua",
+        "<leader>lHa",
         function()
           require("kulala").run_all()
         end,
@@ -58,21 +71,23 @@ return {
         ft = { "http", "rest" },
       },
       {
-        "<leader>ur",
+        "<leader>lHr",
         function()
           require("kulala").replay()
         end,
         desc = "Replay request",
+        ft = { "http", "rest" },
       },
       {
-        "<leader>uo",
+        "<leader>lHo",
         function()
           require("kulala").open()
         end,
         desc = "Open request UI",
+        ft = { "http", "rest" },
       },
       {
-        "<leader>uf",
+        "<leader>lHf",
         function()
           require("kulala").search()
         end,
@@ -80,14 +95,15 @@ return {
         ft = { "http", "rest" },
       },
       {
-        "<leader>ub",
+        "<leader>lHb",
         function()
           require("kulala").scratchpad()
         end,
         desc = "Request scratchpad",
+        ft = { "http", "rest" },
       },
       {
-        "<leader>uc",
+        "<leader>lHc",
         function()
           require("kulala").copy()
         end,
@@ -96,4 +112,6 @@ return {
       },
     },
   },
+}
+
 }

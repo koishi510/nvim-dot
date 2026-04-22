@@ -1,30 +1,3 @@
-local function main_window()
-  local function is_main_window(win)
-    if vim.api.nvim_win_get_config(win).relative ~= "" then
-      return false
-    end
-
-    local buf = vim.api.nvim_win_get_buf(win)
-    local buftype = vim.bo[buf].buftype
-    local filetype = vim.bo[buf].filetype
-
-    return buftype ~= "terminal" and filetype ~= "snacks_layout_box" and filetype ~= "snacks_terminal"
-  end
-
-  local current = vim.api.nvim_get_current_win()
-  if is_main_window(current) then
-    return current
-  end
-
-  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    if is_main_window(win) then
-      return win
-    end
-  end
-
-  return current
-end
-
 return {
   {
     "folke/snacks.nvim",
@@ -88,19 +61,7 @@ return {
           { section = "startup" },
         },
       },
-      explorer = {
-        enabled = true,
-        replace_netrw = true,
-        layout = {
-          layout = {
-            position = "left",
-            width = 30,
-          },
-        },
-        win = {
-          border = "none",
-        },
-      },
+      explorer = { enabled = false },
       gitbrowse = { enabled = true },
       indent = { enabled = true },
       input = { enabled = true },
@@ -117,27 +78,7 @@ return {
         width = { min = 28, max = 90 },
         height = { min = 1, max = 0.6 },
       },
-      picker = {
-        enabled = true,
-        layout = {
-          preset = "telescope",
-          cycle = false,
-        },
-        win = {
-          input = {
-            border = "rounded",
-            keys = {
-              ["<Esc>"] = { "close", mode = { "n", "i" } },
-            },
-          },
-          list = {
-            border = "rounded",
-          },
-          preview = {
-            border = "rounded",
-          },
-        },
-      },
+      picker = { enabled = false },
       quickfile = { enabled = true },
       scope = { enabled = true },
       scratch = { enabled = true },
@@ -164,65 +105,11 @@ return {
           border = "rounded",
         },
       },
-      terminal = {
-        enabled = true,
-        win = {
-          style = "terminal",
-        },
-      },
+      terminal = { enabled = false },
       words = { enabled = true },
       zen = { enabled = true },
     },
     keys = {
-      {
-        "<leader>e",
-        function()
-          Snacks.explorer()
-        end,
-        desc = "Open explorer",
-      },
-      {
-        "<leader>ff",
-        function()
-          Snacks.picker.files()
-        end,
-        desc = "Find files",
-      },
-      {
-        "<leader>fg",
-        function()
-          Snacks.picker.grep()
-        end,
-        desc = "Live grep",
-      },
-      {
-        "<leader>fb",
-        function()
-          Snacks.picker.buffers()
-        end,
-        desc = "Find buffers",
-      },
-      {
-        "<leader>fh",
-        function()
-          Snacks.picker.help()
-        end,
-        desc = "Help tags",
-      },
-      {
-        "<leader>fr",
-        function()
-          Snacks.picker.recent()
-        end,
-        desc = "Recent files",
-      },
-      {
-        "<leader>/",
-        function()
-          Snacks.picker.keymaps()
-        end,
-        desc = "Find keymaps",
-      },
       {
         "<leader>gg",
         function()
@@ -241,50 +128,6 @@ return {
         mode = { "n", "x" },
       },
       {
-        "<leader>tt",
-        function()
-          local root = require("config.root")
-          local cwd = root.buf_project_root() or root.start_dir
-          Snacks.terminal(nil, {
-            count = root.session_count("term_float|" .. cwd),
-            cwd = cwd,
-            win = { position = "float" },
-          })
-        end,
-        desc = "Floating terminal",
-      },
-      {
-        "<leader>th",
-        function()
-          local root = require("config.root")
-          local cwd = root.buf_project_root() or root.start_dir
-          Snacks.terminal(nil, {
-            count = root.session_count("term_bottom|" .. cwd),
-            cwd = cwd,
-            win = {
-              position = "bottom",
-              relative = "win",
-              win = main_window(),
-              height = 0.3,
-            },
-          })
-        end,
-        desc = "Horizontal terminal",
-      },
-      {
-        "<leader>tv",
-        function()
-          local root = require("config.root")
-          local cwd = root.buf_project_root() or root.start_dir
-          Snacks.terminal(nil, {
-            count = root.session_count("term_right|" .. cwd),
-            cwd = cwd,
-            win = { position = "right", width = 0.3 },
-          })
-        end,
-        desc = "Vertical terminal",
-      },
-      {
         "<leader>z",
         function()
           Snacks.zen()
@@ -292,28 +135,28 @@ return {
         desc = "Zen mode",
       },
       {
-        "<leader>.",
+        "<leader>z.",
         function()
           Snacks.scratch()
         end,
         desc = "Scratch",
       },
       {
-        "<leader>S",
+        "<leader>zs",
         function()
           Snacks.scratch.select()
         end,
         desc = "Scratch list",
       },
       {
-        "<leader>nn",
+        "<leader>xn",
         function()
           Snacks.notifier.show_history()
         end,
         desc = "Show notifications",
       },
       {
-        "<leader>nd",
+        "<leader>xN",
         function()
           Snacks.notifier.hide()
         end,

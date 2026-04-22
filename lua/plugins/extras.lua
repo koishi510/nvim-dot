@@ -5,13 +5,53 @@ return {
     dependencies = {
       "nvim-tree/nvim-web-devicons",
     },
-    opts = {},
+    opts = {
+      modes = {
+        qflist = {
+          win = {
+            relative = "win",
+            position = "bottom",
+            size = 12,
+          },
+        },
+      },
+    },
     keys = {
-      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle diagnostics" },
-      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer diagnostics" },
-      { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Toggle quickfix" },
-      { "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Toggle location list" },
-      { "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Toggle symbols" },
+      {
+        "<leader>xx",
+        function()
+          require("config.layout").toggle_trouble_bottom("diagnostics")
+        end,
+        desc = "Toggle diagnostics",
+      },
+      {
+        "<leader>xX",
+        function()
+          require("config.layout").toggle_trouble_bottom("diagnostics", { filter = { buf = 0 } })
+        end,
+        desc = "Buffer diagnostics",
+      },
+      {
+        "<leader>xq",
+        function()
+          require("config.layout").open_trouble_qflist()
+        end,
+        desc = "Open quickfix",
+      },
+      {
+        "<leader>xl",
+        function()
+          require("config.layout").toggle_trouble_bottom("loclist")
+        end,
+        desc = "Toggle location list",
+      },
+      {
+        "<leader>xs",
+        function()
+          require("config.layout").toggle_trouble_right("symbols", { focus = false })
+        end,
+        desc = "Toggle symbols",
+      },
     },
   },
   {

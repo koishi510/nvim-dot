@@ -50,6 +50,11 @@ return {
     },
     keys = {
       {
+        "<leader>cc",
+        "<cmd>TSContextToggle<cr>",
+        desc = "Toggle code context",
+      },
+      {
         "[c",
         function()
           require("treesitter-context").go_to_context(vim.v.count1)
@@ -120,11 +125,11 @@ return {
     "hedyhli/outline.nvim",
     cmd = { "Outline", "OutlineOpen" },
     keys = {
-      { "<leader>ss", "<cmd>Outline<cr>", desc = "Toggle outline" },
+      { "<leader>co", "<cmd>Outline<cr>", desc = "Toggle outline" },
     },
     opts = {
       position = "right",
-      width = 28,
+      width = require("config.layout").right_width(),
       preview_window = {
         auto_preview = false,
       },
@@ -197,7 +202,7 @@ return {
       },
     },
     keys = {
-      { "<leader>ii", "<cmd>PasteImage<cr>", desc = "Insert image" },
+      { "<leader>mi", "<cmd>PasteImage<cr>", desc = "Insert image" },
     },
   },
 }

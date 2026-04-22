@@ -1,4 +1,6 @@
 local autocmd = vim.api.nvim_create_autocmd
+require("config.bigfile").setup()
+require("config.layout").setup()
 
 do
   local function extend_to_word(bufnr, diagnostics)
@@ -87,7 +89,11 @@ autocmd({ "BufRead", "BufNewFile" }, {
     if dir == "" or dir == nil then
       return
     end
-    if vim.fn.glob(dir .. "/*.cpp") ~= "" or vim.fn.glob(dir .. "/*.cc") ~= "" or vim.fn.glob(dir .. "/*.cxx") ~= "" then
+    if
+      vim.fn.glob(dir .. "/*.cpp") ~= ""
+      or vim.fn.glob(dir .. "/*.cc") ~= ""
+      or vim.fn.glob(dir .. "/*.cxx") ~= ""
+    then
       vim.bo[args.buf].filetype = "cpp"
     end
   end,
@@ -97,6 +103,36 @@ autocmd("TextYankPost", {
   desc = "Highlight when yanking text",
   callback = function()
     vim.hl.on_yank()
+  end,
+})
+
+autocmd("FileType", {
+  pattern = {
+    "checkhealth",
+    "help",
+    "lspinfo",
+    "man",
+    "qf",
+  },
+  desc = "Use q to close temporary list and help windows",
+  callback = function(args)
+    vim.bo[args.buf].buflisted = false
+    vim.keymap.set("n", "q", "<cmd>close<cr>", {
+      buffer = args.buf,
+      silent = true,
+      desc = "Close window",
+    })
+  end,
+})
+
+autocmd("BufReadPost", {
+  desc = "Return to last edit position",
+  callback = function(args)
+    local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+    local line_count = vim.api.nvim_buf_line_count(args.buf)
+    if mark[1] > 0 and mark[1] <= line_count then
+      pcall(vim.api.nvim_win_set_cursor, 0, mark)
+    end
   end,
 })
 

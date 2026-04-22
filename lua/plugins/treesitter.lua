@@ -8,6 +8,7 @@ local languages = {
   "dockerfile",
   "elm",
   "go",
+  "haskell",
   "html",
   "http",
   "javascript",
@@ -73,6 +74,10 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         pattern = filetypes,
         callback = function(args)
+          if vim.b[args.buf].bigfile then
+            return
+          end
+
           pcall(vim.treesitter.start, args.buf)
           vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end,

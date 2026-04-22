@@ -1,5 +1,30 @@
 return {
   {
+    "ibhagwan/smartyank.nvim",
+    event = "TextYankPost",
+    opts = {
+      highlight = {
+        enabled = false,
+      },
+      clipboard = {
+        enabled = true,
+      },
+      tmux = {
+        enabled = vim.env.TMUX ~= nil,
+        cmd = { "tmux", "set-buffer", "-w" },
+      },
+      osc52 = {
+        enabled = true,
+        ssh_only = true,
+        silent = true,
+      },
+      validate_yank = false,
+    },
+    config = function(_, opts)
+      require("smartyank").setup(opts)
+    end,
+  },
+  {
     "keaising/im-select.nvim",
     event = "VeryLazy",
     config = function()
