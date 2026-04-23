@@ -53,13 +53,6 @@ return {
             separator = false,
           },
           {
-            filetype = "codecompanion",
-            text = "Chat",
-            highlight = "Directory",
-            text_align = "right",
-            separator = false,
-          },
-          {
             filetype = "Outline",
             text = "Outline",
             highlight = "Directory",

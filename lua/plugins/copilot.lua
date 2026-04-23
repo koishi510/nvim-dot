@@ -3,6 +3,9 @@ return {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     event = "InsertEnter",
+    keys = {
+      { "<leader>at", "<cmd>Copilot toggle<cr>", desc = "Toggle Copilot" },
+    },
     opts = {
       suggestion = {
         enabled = true,

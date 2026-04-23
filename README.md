@@ -19,8 +19,8 @@
 - `cmp-cmdline` / `cmp-dictionary` / `lspkind-nvim` 命令行补全、字典补全与补全图标
 - Codex / Claude / Gemini / OpenCode 终端 agent 快捷入口
 - `bufferline.nvim` 顶部标签栏
-- 文件树 / DBUI / Diffview 文件栏走左侧固定区，agent / 右侧终端 / chat / API 结果 / outline / debug 走右侧固定区，quickfix / diagnostics / task / 底部终端走底部固定区，查找 picker 走主编辑区底部浮窗
-- buffer 标签栏避开文件树、数据库、Git 文件栏、右侧 agent / terminal / chat / outline / debug 侧栏
+- 文件树 / DBUI / Diffview 文件栏走左侧固定区，agent / 右侧终端 / API 结果 / outline / debug 走右侧固定区，quickfix / diagnostics / task / 底部终端走底部固定区，查找 picker 走主编辑区底部浮窗
+- buffer 标签栏避开文件树、数据库、Git 文件栏、右侧 agent / terminal / outline / debug 侧栏
 - `diffview.nvim` Git diff / file history / merge 视图
 - `flash.nvim` 快速跳转
 - `lspsaga.nvim` hover / code action / rename / 定义预览 / 引用与实现查找
@@ -35,7 +35,6 @@
 - `nvim-bqf` quickfix 预览增强
 - `persisted.nvim` 项目 session 保存与恢复
 - `dropbar.nvim` 顶部 breadcrumb / 上下文导航
-- `codecompanion.nvim` 编辑器内 AI chat / actions / visual selection 入会话，带历史记录
 - `img-clip.nvim` 粘贴剪贴板图片
 - `im-select.nvim` 自动切换输入法
 - `image.nvim` 终端内图片显示
@@ -200,8 +199,8 @@ Rust 诊断通过 `rust_analyzer` 使用 `cargo clippy`。
 - `<Space>jd` / `<Space>jr` / `<Space>ji` / `<Space>jy`：定义预览 / 引用查找 / 实现查找 / 类型定义预览
 
 ### AI 与 Agent
-- `<Space>at` / `<Space>aa` / `<Space>aA`：AI chat / actions / 加入会话
 - `<Space>ac` / `<Space>ax` / `<Space>ag` / `<Space>ao`：Claude / Codex / Gemini / OpenCode agent
+- `<Space>at`：开启 / 关闭 Copilot
 - `<Space>ay`：复制 agent 读取 quickfix 的提示词
 
 ### Git
